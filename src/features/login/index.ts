@@ -13,5 +13,8 @@ export { InputField } from '../../shared/components/InputField';
 // Hooks
 export { useAuth } from './hooks/useAuth';
 
-// Esquemas
-export { LoginSchema } from './shemas/loginSchema';
+// Schemas (Interfaces y Tipos)
+export type { ValidationResult, LoginFormData } from './schemas/loginSchema';
+
+// Validaciones
+export { LoginValidation } from './validations/loginValidation';

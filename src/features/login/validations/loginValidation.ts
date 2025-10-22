@@ -1,14 +1,9 @@
+import type { ValidationResult } from '../schemas/loginSchema';
+
 /**
- * Esquema de Validación para Login
- * Simula una librería de validación como Joi o Yup
+ * Validaciones para el formulario de Login
  */
-
-export interface ValidationResult {
-  isValid: boolean;
-  error: string | null;
-}
-
-export const LoginSchema = {
+export const LoginValidation = {
   /**
    * Valida el formato del correo electrónico
    * @param value - Correo electrónico a validar
@@ -46,8 +41,8 @@ export const LoginSchema = {
    * @returns Objeto con el resultado de la validación
    */
   validateAll: (email: string, password: string): ValidationResult => {
-    const emailError = LoginSchema.email(email);
-    const passwordError = LoginSchema.password(password);
+    const emailError = LoginValidation.email(email);
+    const passwordError = LoginValidation.password(password);
 
     const error = emailError || passwordError;
 
