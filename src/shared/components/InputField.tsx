@@ -7,6 +7,7 @@ interface InputFieldProps {
   onChange: (value: string) => void;
   placeholder: string;
   id: string;
+  disabled?: boolean;
 }
 
 /**
@@ -25,7 +26,8 @@ export const InputField: React.FC<InputFieldProps> = ({
   value,
   onChange,
   placeholder,
-  id
+  id,
+  disabled = false
 }) => (
   <div className="relative">
     <label
@@ -41,7 +43,8 @@ export const InputField: React.FC<InputFieldProps> = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full px-4 py-3.5 bg-white border-2 border-neutral-200 rounded-lg text-neutral-900 placeholder:text-neutral-400 focus:border-primary focus:ring-4 focus:ring-primary focus:ring-opacity-10 outline-none transition-all duration-200 hover:border-neutral-300"
+      disabled={disabled}
+      className="w-full px-4 py-3.5 bg-white border-2 border-neutral-200 rounded-lg text-neutral-900 placeholder:text-neutral-400 focus:border-primary focus:ring-4 focus:ring-primary focus:ring-opacity-10 outline-none transition-all duration-200 hover:border-neutral-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-100"
       required
     />
   </div>

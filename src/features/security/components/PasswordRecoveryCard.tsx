@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { InputField } from '../../../shared/components/InputField';
+import { usePasswordRecovery } from '../hooks/usePasswordRecovery';
 
 /**
  * Componente de recuperación de contraseña
  */
 export const PasswordRecoveryCard: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const {
+    email,
+    setEmail,
+    handleSendEmail,
+    emailSent,
+    isLoading,
+    error,
+    success,
+  } = usePasswordRecovery();
 
   return (
     // Contenedor Principal: Tarjeta de Recuperación (Responsive)
@@ -51,7 +60,23 @@ export const PasswordRecoveryCard: React.FC = () => {
           </p>
         </div>
 
-        <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-6" onSubmit={handleSendEmail}>
+          {/* Mensaje de éxito */}
+          {emailSent && success && (
+            <div className="p-4 bg-success/10 border border-success/30 rounded-xl">
+              <p className="text-success text-sm text-center">
+                Correo enviado exitosamente. Revisa tu bandeja de entrada.
+              </p>
+            </div>
+          )}
+
+          {/* Mensaje de error */}
+          {error && (
+            <div className="p-4 bg-danger/10 border border-danger/30 rounded-xl">
+              <p className="text-danger text-sm text-center">{error}</p>
+            </div>
+          )}
+
           <InputField
             id="email"
             label="Correo Electrónico"
@@ -59,14 +84,16 @@ export const PasswordRecoveryCard: React.FC = () => {
             value={email}
             onChange={setEmail}
             placeholder="ejemplo@tuempresa.com"
+            disabled={emailSent}
           />
 
           {/* Botón Principal */}
           <button
             type="submit"
-            className="w-full py-3 bg-primary hover:opacity-90 text-white font-semibold rounded-xl shadow-lg focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-50 transition-all duration-150"
+            disabled={isLoading || emailSent}
+            className="w-full py-3 bg-primary hover:opacity-90 text-white font-semibold rounded-xl shadow-lg focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-50 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Enviar Código de Recuperación
+            {isLoading ? 'Enviando...' : emailSent ? 'Correo Enviado' : 'Enviar Código de Recuperación'}
           </button>
         </form>
 

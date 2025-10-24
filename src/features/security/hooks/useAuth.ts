@@ -1,17 +1,30 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 /**
  * Hook para manejar el formulario de login
- * Listo para integrar con la API real
+ * Usa el AuthContext para gestión de estado global
  */
 export const useAuth = () => {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+  }
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: Integrar con API de login
-    console.log('Formulario enviado:', { email, password });
+
+    try {
+      await context.login(email, password);
+      // Redirigir o realizar otra acción después del login exitoso
+    } catch (error) {
+      console.error('Error en login:', error);
+      // Mostrar mensaje de error al usuario
+    }
   };
 
   return {
@@ -20,5 +33,10 @@ export const useAuth = () => {
     password,
     setPassword,
     handleLogin,
+    // Exponer estado y acciones del contexto
+    isAuthenticated: context.isAuthenticated,
+    user: context.user,
+    isLoading: context.isLoading,
+    logout: context.logout,
   };
 };
