@@ -17,7 +17,7 @@ export const LoginValidation = {
       return "El correo no es válido. Asegúrate de incluir @ y dominio.";
     }
     return null;
-  },
+  },  
 
   /**
    * Valida la contraseña
