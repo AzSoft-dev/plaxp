@@ -1,5 +1,6 @@
 import { useState, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../../shared/contexts/AuthContext';
 
 /**
  * Hook para manejar el formulario de login
@@ -7,6 +8,7 @@ import { AuthContext } from '../context/AuthContext';
  */
 export const useAuth = () => {
   const context = useContext(AuthContext);
+  const navigate = useNavigate();
 
   if (!context) {
     throw new Error('useAuth debe ser usado dentro de un AuthProvider');
@@ -14,16 +16,17 @@ export const useAuth = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
 
     try {
       await context.login(email, password);
-      // Redirigir o realizar otra acción después del login exitoso
-    } catch (error) {
-      console.error('Error en login:', error);
-      // Mostrar mensaje de error al usuario
+      navigate('/dashboard');
+    } catch (error: any) {
+      setError(error?.message || 'Error al iniciar sesión');
     }
   };
 
@@ -32,8 +35,8 @@ export const useAuth = () => {
     setEmail,
     password,
     setPassword,
+    error,
     handleLogin,
-    // Exponer estado y acciones del contexto
     isAuthenticated: context.isAuthenticated,
     user: context.user,
     isLoading: context.isLoading,

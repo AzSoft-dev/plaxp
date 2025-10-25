@@ -7,7 +7,7 @@ import { InputField } from '../../../shared/components/InputField';
  * Componente principal que contiene la tarjeta de login
  */
 export const LoginCard: React.FC = () => {
-  const { email, setEmail, password, setPassword, handleLogin } = useAuth();
+  const { email, setEmail, password, setPassword, error, isLoading, handleLogin } = useAuth();
 
   return (
     // Contenedor Principal: Tarjeta de Login (Responsive)
@@ -47,6 +47,12 @@ export const LoginCard: React.FC = () => {
         </div>
 
         <form className="space-y-6" onSubmit={handleLogin}>
+          {error && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-800 text-sm">{error}</p>
+            </div>
+          )}
+
           <InputField
             id="email"
             label="Correo Electrónico"
@@ -89,9 +95,10 @@ export const LoginCard: React.FC = () => {
           {/* Botón Principal */}
           <button
             type="submit"
-            className="w-full py-3 bg-primary hover:opacity-90 text-white font-semibold rounded-xl shadow-lg focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-50 transition-all duration-150"
+            disabled={isLoading}
+            className="w-full py-3 bg-primary hover:opacity-90 text-white font-semibold rounded-xl shadow-lg focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-50 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Acceder a Plaxp
+            {isLoading ? 'Iniciando sesión...' : 'Acceder a Plaxp'}
           </button>
         </form>
 

@@ -6,8 +6,6 @@ import type { ValidationResult } from '../schemas/loginSchema';
 export const LoginValidation = {
   /**
    * Valida el formato del correo electrónico
-   * @param value - Correo electrónico a validar
-   * @returns Mensaje de error o null si es válido
    */
   email: (value: string): string | null => {
     if (!value) {
@@ -17,12 +15,10 @@ export const LoginValidation = {
       return "El correo no es válido. Asegúrate de incluir @ y dominio.";
     }
     return null;
-  },  
+  },
 
   /**
    * Valida la contraseña
-   * @param value - Contraseña a validar
-   * @returns Mensaje de error o null si es válido
    */
   password: (value: string): string | null => {
     if (!value) {
@@ -36,9 +32,6 @@ export const LoginValidation = {
 
   /**
    * Valida todos los campos del formulario de login
-   * @param email - Correo electrónico
-   * @param password - Contraseña
-   * @returns Objeto con el resultado de la validación
    */
   validateAll: (email: string, password: string): ValidationResult => {
     const emailError = LoginValidation.email(email);

@@ -16,12 +16,10 @@ export { useAuth } from './hooks/useAuth';
 export { usePasswordRecovery } from './hooks/usePasswordRecovery';
 
 // Context
-export { AuthProvider, AuthContext } from './context/AuthContext';
-export type { User, AuthContextType } from './context/AuthContext';
 export { PasswordRecoveryProvider, PasswordRecoveryContext } from './context/PasswordRecoveryContext';
 export type { PasswordRecoveryContextType } from './context/PasswordRecoveryContext';
 
-// Schemas (Interfaces y Tipos)
+// Schemas
 export type { ValidationResult, LoginFormData } from './schemas/loginSchema';
 
 // Validaciones
