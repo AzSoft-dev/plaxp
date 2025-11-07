@@ -31,6 +31,8 @@ interface PaginatedDataTableProps<T extends BaseItem> {
     fetchDataFunction: (page: number, limit: number, query: string, status?: string) => Promise<PaginatedResponse<T>>;
     onRowClick: (item: T) => void;
     onCreateNew: () => void;
+    onEdit?: (item: T) => void;  // Opcional: callback para editar
+    onView?: (item: T) => void;  // Opcional: callback para ver detalles
     columns: ColumnDefinition<T>[];
     title: string;
     refreshTrigger?: number;
@@ -41,10 +43,12 @@ const DEFAULT_PAGE_SIZE = 15;
 const PAGE_SIZE_OPTIONS = [10, 15, 25, 50, 100];
 
 // --- Subcomponente para la vista de TARJETAS (Móvil) ---
-const PaginatedCardList = <T extends BaseItem>({ data, columns, onRowClick }: {
+const PaginatedCardList = <T extends BaseItem>({ data, columns, onRowClick, onEdit, onView }: {
     data: T[];
     columns: ColumnDefinition<T>[];
     onRowClick: (item: T) => void;
+    onEdit?: (item: T) => void;
+    onView?: (item: T) => void;
 }) => (
     <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-3">
 
@@ -62,8 +66,30 @@ const PaginatedCardList = <T extends BaseItem>({ data, columns, onRowClick }: {
                         </div>
                     ))}
                     <div className="flex justify-end pt-2 space-x-2 border-t border-neutral-200/50">
-                        <button className="text-primary hover:text-purple-700 transform hover:scale-110 transition-all duration-200 p-1" aria-label="View Details"><FaEye size={16} /></button>
-                        <button className="text-info hover:text-blue-700 transform hover:scale-110 transition-all duration-200 p-1" aria-label="Edit"><FaEdit size={16} /></button>
+                        {onView && (
+                            <button
+                                className="text-primary hover:text-purple-700 transform hover:scale-110 transition-all duration-200 p-1"
+                                aria-label="View Details"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onView(item);
+                                }}
+                            >
+                                <FaEye size={16} />
+                            </button>
+                        )}
+                        {onEdit && (
+                            <button
+                                className="text-info hover:text-blue-700 transform hover:scale-110 transition-all duration-200 p-1"
+                                aria-label="Edit"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEdit(item);
+                                }}
+                            >
+                                <FaEdit size={16} />
+                            </button>
+                        )}
                         <button className="text-danger hover:text-red-700 transform hover:scale-110 transition-all duration-200 p-1" aria-label="Delete"><FaTrash size={16} /></button>
                     </div>
                 </div>
@@ -73,10 +99,12 @@ const PaginatedCardList = <T extends BaseItem>({ data, columns, onRowClick }: {
 );
 
 // --- Subcomponente para la vista de TABLA (Desktop) ---
-const PaginatedTable = <T extends BaseItem>({ data, columns, onRowClick, onSort, sortColumn, sortDirection }: {
+const PaginatedTable = <T extends BaseItem>({ data, columns, onRowClick, onEdit, onView, onSort, sortColumn, sortDirection }: {
     data: T[];
     columns: ColumnDefinition<T>[];
     onRowClick: (item: T) => void;
+    onEdit?: (item: T) => void;
+    onView?: (item: T) => void;
     onSort: (column: keyof T) => void;
     sortColumn: keyof T | null;
     sortDirection: 'asc' | 'desc';
@@ -147,12 +175,32 @@ const PaginatedTable = <T extends BaseItem>({ data, columns, onRowClick, onSort,
                             ))}
                             <td className="py-2.5 px-5 text-center" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex item-center justify-center space-x-2">
-                                    <button className="text-primary hover:text-white transition-all duration-200 p-1.5 hover:bg-primary rounded-lg shadow hover:shadow-md" aria-label="View Details" title="Ver detalles">
-                                        <FaEye size={16} />
-                                    </button>
-                                    <button className="text-info hover:text-white transition-all duration-200 p-1.5 hover:bg-info rounded-lg shadow hover:shadow-md" aria-label="Edit" title="Editar">
-                                        <FaEdit size={16} />
-                                    </button>
+                                    {onView && (
+                                        <button
+                                            className="text-primary hover:text-white transition-all duration-200 p-1.5 hover:bg-primary rounded-lg shadow hover:shadow-md"
+                                            aria-label="View Details"
+                                            title="Ver detalles"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onView(item);
+                                            }}
+                                        >
+                                            <FaEye size={16} />
+                                        </button>
+                                    )}
+                                    {onEdit && (
+                                        <button
+                                            className="text-info hover:text-white transition-all duration-200 p-1.5 hover:bg-info rounded-lg shadow hover:shadow-md"
+                                            aria-label="Edit"
+                                            title="Editar"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onEdit(item);
+                                            }}
+                                        >
+                                            <FaEdit size={16} />
+                                        </button>
+                                    )}
                                 </div>
                             </td>
                         </tr>
@@ -168,6 +216,8 @@ const PaginatedDataTable = <T extends BaseItem>({
     fetchDataFunction,
     onRowClick,
     onCreateNew,
+    onEdit,
+    onView,
     columns,
     title,
     refreshTrigger = 0,
@@ -348,7 +398,6 @@ const PaginatedDataTable = <T extends BaseItem>({
                                         className="appearance-none bg-white border border-neutral-300 rounded-lg pl-4 pr-10 py-2.5 text-sm font-semibold text-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary cursor-pointer transition-all shadow-md hover:shadow-lg hover:border-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
                                         disabled={loading}
                                     >
-                                        <option value="" className="font-semibold">Todos los estados</option>
                                         {statusOptions.map((option) => (
                                             <option key={option.value} value={option.value} className="font-semibold">
                                                 {option.label}
@@ -414,11 +463,13 @@ const PaginatedDataTable = <T extends BaseItem>({
                                     data={sortedData}
                                     columns={columns}
                                     onRowClick={handleRowClickEvent}
+                                    onEdit={onEdit}
+                                    onView={onView}
                                     onSort={handleSort}
                                     sortColumn={sortColumn}
                                     sortDirection={sortDirection}
                                 />
-                                <PaginatedCardList data={sortedData} columns={columns} onRowClick={handleRowClickEvent} />
+                                <PaginatedCardList data={sortedData} columns={columns} onRowClick={handleRowClickEvent} onEdit={onEdit} onView={onView} />
                             </>
                         )}
                     </>

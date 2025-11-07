@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { LoginPage, PasswordRecoveryPage, VerifyCodePage, ResetPasswordPage } from './features/security'
 import { UsersPage } from './features/users'
+import { RolesPage } from './features/roles/pages/RolesPage'
 import { AuthProvider } from './shared/contexts/AuthContext'
 import { LoadingProvider } from './shared/contexts/LoadingContext'
 import { PasswordRecoveryProvider } from './features/security/context/PasswordRecoveryContext'
@@ -53,6 +54,14 @@ function App() {
                 <ProtectedRoute>
                   <MainLayout>
                     <UsersPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+
+              <Route path="/roles" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <RolesPage />
                   </MainLayout>
                 </ProtectedRoute>
               } />

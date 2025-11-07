@@ -152,6 +152,54 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               )}
             </Link>
 
+            {/* Roles */}
+            <Link
+              to="/roles"
+              onClick={() => setSidebarOpen(false)}
+              className={`
+                group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                ${location.pathname === '/roles'
+                  ? 'bg-gradient-to-r from-teal-500/15 to-teal-500/5 text-teal-600 shadow-sm'
+                  : 'text-neutral-700 hover:bg-neutral-100/80'
+                }
+              `}
+            >
+              {/* Indicador de página activa */}
+              {location.pathname === '/roles' && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-teal-500 to-teal-600 rounded-r-full"></div>
+              )}
+
+              <div className={`
+                relative z-10 p-2 rounded-lg transition-all duration-200
+                ${location.pathname === '/roles'
+                  ? 'bg-gradient-to-br from-teal-500 to-teal-600 shadow-md shadow-teal-500/30'
+                  : 'bg-gradient-to-br from-teal-500 to-teal-600 shadow-md shadow-teal-500/20 group-hover:shadow-teal-500/30'
+                }
+              `}>
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+              </div>
+              {!sidebarCollapsed && (
+                <span className="relative z-10 font-semibold text-sm">Roles</span>
+              )}
+              {location.pathname === '/roles' && !sidebarCollapsed && (
+                <div className="ml-auto">
+                  <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></div>
+                </div>
+              )}
+            </Link>
+
             {/* Separador */}
             <div className="py-2">
               <div className="h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent"></div>

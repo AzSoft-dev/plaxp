@@ -1,0 +1,45 @@
+/* Animaciones para CreateUserModal */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.create-user-modal-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.create-user-modal-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.create-user-modal-shake {
+  animation: shake 0.4s ease-in-out;
+}
