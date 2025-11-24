@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { FaEdit, FaTrash, FaEye, FaSearch, FaPlus, FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { CgSpinner } from "react-icons/cg";
 import React from 'react';
@@ -28,7 +28,7 @@ export interface StatusOption {
 }
 
 interface PaginatedDataTableProps<T extends BaseItem> {
-    fetchDataFunction: (page: number, limit: number, query: string, status?: string) => Promise<PaginatedResponse<T>>;
+    fetchDataFunction: (page: number, limit: number, query: string, status?: string, additionalFilters?: Record<string, any>) => Promise<PaginatedResponse<T>>;
     onRowClick: (item: T) => void;
     onCreateNew: () => void;
     onEdit?: (item: T) => void;  // Opcional: callback para editar
@@ -37,6 +37,8 @@ interface PaginatedDataTableProps<T extends BaseItem> {
     title: string;
     refreshTrigger?: number;
     statusOptions?: StatusOption[];  // Opcional: array de estados disponibles
+    renderAdditionalFilters?: (filters: Record<string, any>, setFilters: (filters: Record<string, any>) => void) => React.ReactNode;  // Opcional: renderizar filtros adicionales
+    additionalFilters?: Record<string, any>;  // Opcional: filtros adicionales iniciales
 }
 
 const DEFAULT_PAGE_SIZE = 15;
@@ -50,22 +52,22 @@ const PaginatedCardList = <T extends BaseItem>({ data, columns, onRowClick, onEd
     onEdit?: (item: T) => void;
     onView?: (item: T) => void;
 }) => (
-    <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
         {data.map((item) => (
             <div
                 key={item.id}
-                className="group bg-gradient-to-br from-white to-neutral-50 rounded-xl shadow-md p-4 border border-neutral-200/50 hover:shadow-xl hover:border-primary/30 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.01] cursor-pointer backdrop-blur-sm"
+                className="group bg-gradient-to-br from-white to-neutral-50 dark:from-dark-card dark:to-dark-bg rounded-2xl shadow-lg p-4 border border-neutral-200/50 dark:border-dark-border hover:shadow-2xl hover:border-primary/30 transition-all duration-300 transform hover:-translate-y-2 hover:scale-[1.02] cursor-pointer backdrop-blur-sm"
                 onClick={() => onRowClick(item)}
             >
                 <div className="space-y-2.5">
                     {columns.map((col) => (
                         <div key={String(col.key)} className="flex items-start space-x-2">
-                            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wide min-w-[70px]">{col.header}:</span>
-                            <span className="text-sm font-semibold text-neutral-900 group-hover:text-primary transition-colors duration-300">{item[col.key] as React.ReactNode}</span>
+                            <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide min-w-[70px]">{col.header}:</span>
+                            <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 group-hover:text-primary transition-colors duration-300">{item[col.key] as React.ReactNode}</span>
                         </div>
                     ))}
-                    <div className="flex justify-end pt-2 space-x-2 border-t border-neutral-200/50">
+                    <div className="flex justify-end pt-2 space-x-2 border-t border-neutral-200/50 dark:border-dark-border">
                         {onView && (
                             <button
                                 className="text-primary hover:text-purple-700 transform hover:scale-110 transition-all duration-200 p-1"
@@ -109,17 +111,17 @@ const PaginatedTable = <T extends BaseItem>({ data, columns, onRowClick, onEdit,
     sortColumn: keyof T | null;
     sortDirection: 'asc' | 'desc';
 }) => (
-    <div className="hidden md:block overflow-hidden">
+    <div className="overflow-hidden">
         {/* Contenedor con scroll interno */}
         <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 400px)' }}>
             <table className="w-full table-auto border-separate border-spacing-y-1.5">
                 <thead className="sticky top-0 z-10">
                     {/* class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal" */}
-                    <tr className="bg-gray-200 text-gray-600  uppercase text-xs leading-normal tracking-wide shadow-md">
+                    <tr className="bg-gray-200 dark:bg-dark-border text-gray-600 dark:text-neutral-300 uppercase text-xs leading-normal tracking-wide shadow-md">
                         {columns.map((col) => (
                             <th
                                 key={String(col.key)}
-                                className="py-2 px-5 text-left font-bold first:pl-6 cursor-pointer hover:bg-gray-300 transition-colors select-none group"
+                                className="py-2 px-5 text-left font-bold first:pl-6 cursor-pointer hover:bg-gray-300 dark:hover:bg-dark-hover transition-colors select-none group"
                                 onClick={() => onSort(col.key)}
                             >
                                 <div className="flex items-center gap-2.5">
@@ -156,13 +158,13 @@ const PaginatedTable = <T extends BaseItem>({ data, columns, onRowClick, onEdit,
                         </th>
                     </tr>
                 </thead>
-                <tbody className="text-neutral-700 text-sm">
+                <tbody className="text-neutral-700 dark:text-neutral-300 text-sm">
                     {data.map((item, index) => (
                         <tr
                             key={item.id}
                             onClick={() => onRowClick(item)}
-                            className={`cursor-pointer hover:bg-primary/5 transition-all duration-200 shadow-md hover:shadow-lg ${
-                                index % 2 === 0 ? 'bg-white' : 'bg-neutral-50/50'
+                            className={`cursor-pointer hover:bg-primary/5 transition-all duration-200 shadow-sm hover:shadow-xl border-l-4 border-transparent hover:border-primary ${
+                                index % 2 === 0 ? 'bg-white dark:bg-dark-card' : 'bg-neutral-50/50 dark:bg-dark-bg'
                             }`}
                         >
                             {columns.map((col) => (
@@ -170,7 +172,7 @@ const PaginatedTable = <T extends BaseItem>({ data, columns, onRowClick, onEdit,
                                     key={String(col.key)}
                                     className="py-2.5 px-5 text-left first:pl-6"
                                 >
-                                    <span className="font-medium text-neutral-800">{item[col.key] as React.ReactNode}</span>
+                                    <span className="font-medium text-neutral-800 dark:text-neutral-200">{item[col.key] as React.ReactNode}</span>
                                 </td>
                             ))}
                             <td className="py-2.5 px-5 text-center" onClick={(e) => e.stopPropagation()}>
@@ -222,6 +224,8 @@ const PaginatedDataTable = <T extends BaseItem>({
     title,
     refreshTrigger = 0,
     statusOptions,
+    renderAdditionalFilters,
+    additionalFilters: initialAdditionalFilters = {},
 }: PaginatedDataTableProps<T>) => {
     // Estado de la Data y UI
     const [data, setData] = useState<T[]>([]);
@@ -232,8 +236,13 @@ const PaginatedDataTable = <T extends BaseItem>({
     const [inputTerm, setInputTerm] = useState("");
     const [activeSearchTerm, setActiveSearchTerm] = useState("");
 
-    // Estado de Filtro por Estado
-    const [selectedStatus, setSelectedStatus] = useState<string>("");
+    // Estado de Filtro por Estado - Inicializar con el primer valor de statusOptions si existe
+    const [selectedStatus, setSelectedStatus] = useState<string>(
+        statusOptions && statusOptions.length > 0 ? statusOptions[0].value : ""
+    );
+
+    // Estado de Filtros Adicionales
+    const [additionalFilters, setAdditionalFilters] = useState<Record<string, any>>(initialAdditionalFilters);
 
     // Estado de Paginación
     const [currentPage, setCurrentPage] = useState(1);
@@ -243,6 +252,21 @@ const PaginatedDataTable = <T extends BaseItem>({
     // Estado de Ordenamiento
     const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+    // Ref para la función de fetch (evita recreaciones innecesarias)
+    const fetchDataFunctionRef = useRef(fetchDataFunction);
+    const loadingRef = useRef(false);
+    const onRowClickRef = useRef(onRowClick);
+    const onEditRef = useRef(onEdit);
+    const onViewRef = useRef(onView);
+
+    // Actualizar las referencias cuando cambien las funciones
+    useEffect(() => {
+        fetchDataFunctionRef.current = fetchDataFunction;
+        onRowClickRef.current = onRowClick;
+        onEditRef.current = onEdit;
+        onViewRef.current = onView;
+    }, [fetchDataFunction, onRowClick, onEdit, onView]);
 
     // Cálculo de páginas
     const totalPages = useMemo(() =>
@@ -281,19 +305,28 @@ const PaginatedDataTable = <T extends BaseItem>({
 
     // Hook para manejar la consulta al servidor
     const loadData = useCallback(async () => {
+        // Evitar múltiples llamadas simultáneas
+        if (loadingRef.current) {
+            return;
+        }
+
+        loadingRef.current = true;
         setLoading(true);
         setError(null);
 
         try {
-            const result = await fetchDataFunction(
+            const result = await fetchDataFunctionRef.current(
                 currentPage,
                 pageSize,
                 activeSearchTerm,
-                selectedStatus || undefined
+                selectedStatus || undefined,
+                additionalFilters
             );
+
             if (!Array.isArray(result.data)) {
                 throw new Error("La API no devolvió un array de datos válido.");
             }
+
             setData(result.data);
             setTotalItems(result.total);
             setCurrentPage(result.page || currentPage);
@@ -304,65 +337,76 @@ const PaginatedDataTable = <T extends BaseItem>({
             setData([]);
             setTotalItems(0);
         } finally {
+            loadingRef.current = false;
             setLoading(false);
         }
-    }, [currentPage, pageSize, activeSearchTerm, selectedStatus, fetchDataFunction, refreshTrigger]);
+    }, [currentPage, pageSize, activeSearchTerm, selectedStatus, additionalFilters]);
 
     useEffect(() => {
         loadData();
-    }, [loadData]);
+    }, [loadData, refreshTrigger]);
 
-    const handleSearchSubmit = () => {
+    const handleSearchSubmit = useCallback(() => {
         if (inputTerm !== activeSearchTerm) {
             setCurrentPage(1);
             setActiveSearchTerm(inputTerm);
         } else if (currentPage === 1) {
             loadData();
         }
-    };
+    }, [inputTerm, activeSearchTerm, currentPage, loadData]);
 
-    const handleStatusChange = (status: string) => {
+    const handleStatusChange = useCallback((status: string) => {
         setSelectedStatus(status);
-        setCurrentPage(1); // Reset a la primera página al cambiar filtro
-    };
+        setCurrentPage(1);
+    }, []);
 
-    const handleRowClickEvent = (item: T) => {
-        onRowClick(item);
-    };
+    const handleRowClickEvent = useCallback((item: T) => {
+        onRowClickRef.current(item);
+    }, []);
 
-    const handlePageChange = (newPage: number) => {
+    const handleEditEvent = useCallback((item: T) => {
+        if (onEditRef.current) {
+            onEditRef.current(item);
+        }
+    }, []);
+
+    const handleViewEvent = useCallback((item: T) => {
+        if (onViewRef.current) {
+            onViewRef.current(item);
+        }
+    }, []);
+
+    const handlePageChange = useCallback((newPage: number) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
         }
-    };
+    }, [totalPages]);
 
-    const handlePageSizeChange = (newSize: number) => {
+    const handlePageSizeChange = useCallback((newSize: number) => {
         setPageSize(newSize);
-        setCurrentPage(1); // Reset a la primera página cuando cambia el tamaño
-    };
+        setCurrentPage(1);
+    }, []);
 
-    const handleSort = (column: keyof T) => {
+    const handleSort = useCallback((column: keyof T) => {
         if (sortColumn === column) {
-            // Si ya está ordenado por esta columna, cambiar dirección
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
         } else {
-            // Nueva columna, ordenar ascendente por defecto
             setSortColumn(column);
             setSortDirection('asc');
         }
-    };
+    }, [sortColumn, sortDirection]);
 
     return (
         <div className="w-full font-sans px-2 md:px-0">
-            <h1 className="text-3xl font-bold mb-6 text-neutral-900 flex items-center gap-3">
+            <h1 className="text-3xl font-bold mb-6 text-neutral-900 dark:text-neutral-100 flex items-center gap-3">
                 <div className="h-10 w-1.5 bg-gradient-to-b from-primary to-purple-600 rounded-full"></div>
                 {title}
             </h1>
 
-            <div className="md:bg-white md:rounded-lg md:shadow-lg md:border md:border-neutral-200 overflow-hidden w-full">
+            <div className="md:bg-white dark:md:bg-dark-card md:rounded-2xl md:shadow-lg md:border md:border-neutral-100 dark:md:border-dark-border overflow-hidden w-full backdrop-blur-sm">
 
                 {/* Controles de Búsqueda y Creación - STICKY */}
-                <div className="sticky top-0 z-20 bg-white border-b border-neutral-200 p-4 sm:p-5">
+                <div className="sticky top-0 z-20 bg-white dark:bg-dark-card border-b border-neutral-200 dark:border-dark-border p-4 sm:p-5">
                     <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0 sm:space-x-3">
                         {/* Búsqueda y Filtros */}
                         <div className="flex flex-col sm:flex-row w-full sm:w-auto space-y-2 sm:space-y-0 sm:space-x-2">
@@ -372,7 +416,7 @@ const PaginatedDataTable = <T extends BaseItem>({
                                     <input
                                         type="text"
                                         placeholder="Buscar..."
-                                        className="pl-3 pr-3 py-2.5 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all w-full sm:w-64 bg-white text-sm shadow-md hover:shadow-lg focus:shadow-lg"
+                                        className="pl-3 pr-3 py-2.5 border border-neutral-300 dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all w-full sm:w-64 bg-white dark:bg-dark-bg dark:text-neutral-100 text-sm shadow-md hover:shadow-lg focus:shadow-lg"
                                         value={inputTerm}
                                         onChange={(e) => setInputTerm(e.target.value)}
                                         onKeyDown={(e) => { if (e.key === 'Enter') handleSearchSubmit(); }}
@@ -395,7 +439,7 @@ const PaginatedDataTable = <T extends BaseItem>({
                                         id="status-filter"
                                         value={selectedStatus}
                                         onChange={(e) => handleStatusChange(e.target.value)}
-                                        className="appearance-none bg-white border border-neutral-300 rounded-lg pl-4 pr-10 py-2.5 text-sm font-semibold text-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary cursor-pointer transition-all shadow-md hover:shadow-lg hover:border-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="appearance-none bg-white dark:bg-dark-bg border border-neutral-300 dark:border-dark-border rounded-lg pl-4 pr-10 py-2.5 text-sm font-semibold text-neutral-700 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary cursor-pointer transition-all shadow-md hover:shadow-lg hover:border-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
                                         disabled={loading}
                                     >
                                         {statusOptions.map((option) => (
@@ -412,6 +456,12 @@ const PaginatedDataTable = <T extends BaseItem>({
                                     </div>
                                 </div>
                             )}
+
+                            {/* Filtros Adicionales */}
+                            {renderAdditionalFilters && renderAdditionalFilters(additionalFilters, (newFilters) => {
+                                setAdditionalFilters(newFilters);
+                                setCurrentPage(1);
+                            })}
                         </div>
 
                         {/* Botón crear */}
@@ -458,18 +508,30 @@ const PaginatedDataTable = <T extends BaseItem>({
                             </div>
                         ) : (
                             <>
-                                {/* Renderizado Condicional */}
-                                <PaginatedTable
-                                    data={sortedData}
-                                    columns={columns}
-                                    onRowClick={handleRowClickEvent}
-                                    onEdit={onEdit}
-                                    onView={onView}
-                                    onSort={handleSort}
-                                    sortColumn={sortColumn}
-                                    sortDirection={sortDirection}
-                                />
-                                <PaginatedCardList data={sortedData} columns={columns} onRowClick={handleRowClickEvent} onEdit={onEdit} onView={onView} />
+                                {/* Renderizado Condicional - Solo renderizar el componente visible */}
+                                {/* Desktop */}
+                                <div className="hidden md:block">
+                                    <PaginatedTable
+                                        data={sortedData}
+                                        columns={columns}
+                                        onRowClick={handleRowClickEvent}
+                                        onEdit={onEdit ? handleEditEvent : undefined}
+                                        onView={onView ? handleViewEvent : undefined}
+                                        onSort={handleSort}
+                                        sortColumn={sortColumn}
+                                        sortDirection={sortDirection}
+                                    />
+                                </div>
+                                {/* Mobile */}
+                                <div className="md:hidden">
+                                    <PaginatedCardList
+                                        data={sortedData}
+                                        columns={columns}
+                                        onRowClick={handleRowClickEvent}
+                                        onEdit={onEdit ? handleEditEvent : undefined}
+                                        onView={onView ? handleViewEvent : undefined}
+                                    />
+                                </div>
                             </>
                         )}
                     </>
@@ -477,37 +539,38 @@ const PaginatedDataTable = <T extends BaseItem>({
 
                 {/* Mensaje si no hay items después de cargar */}
                 {!loading && totalItems === 0 && !error && activeSearchTerm === "" && (
-                    <div className="py-12 text-center animate-fade-in">
-                        <svg className="w-16 h-16 mx-auto mb-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="py-16 text-center animate-fade-in">
+                        <svg className="w-20 h-20 mx-auto mb-5 text-neutral-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <p className="text-lg font-semibold text-neutral-800 mb-2">No hay registros disponibles</p>
-                        <p className="text-sm text-neutral-600">Comience creando una nueva entrada.</p>
+                        <p className="text-xl font-bold text-neutral-800 dark:text-neutral-200 mb-2">No hay registros disponibles</p>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">Aún no se han creado registros en esta sección.</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-500">Haz clic en el botón "Crear Nuevo" para comenzar.</p>
                     </div>
                 )}
                 </div>
 
                 {/* Paginación - STICKY FOOTER */}
                 {!loading && totalItems > 0 && (
-                    <div className="sticky bottom-0 z-20 bg-white border-t border-neutral-200 p-3 md:p-4 flex flex-col lg:flex-row justify-between items-center space-y-2 lg:space-y-0 gap-3 w-full">
+                    <div className="sticky bottom-0 z-20 bg-white dark:bg-dark-card border-t border-neutral-200 dark:border-dark-border p-3 md:p-4 flex flex-col lg:flex-row justify-between items-center space-y-2 lg:space-y-0 gap-3 w-full">
                         {/* Selector de tamaño de página */}
-                        <div className="flex items-center space-x-2 bg-neutral-50 px-3 py-2 rounded-lg border border-neutral-200 order-1 lg:order-none">
-                            <span className="text-xs font-medium text-neutral-600 whitespace-nowrap">Mostrar:</span>
+                        <div className="flex items-center space-x-2 bg-neutral-50 dark:bg-dark-bg px-3 py-2 rounded-lg border border-neutral-200 dark:border-dark-border order-1 lg:order-none">
+                            <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 whitespace-nowrap">Mostrar:</span>
                             <select
                                 value={pageSize}
                                 onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-                                className="bg-white border border-neutral-300 rounded px-2 py-1 text-xs font-medium text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary cursor-pointer"
+                                className="bg-white dark:bg-dark-card border border-neutral-300 dark:border-dark-border rounded px-2 py-1 text-xs font-medium text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary cursor-pointer"
                                 disabled={loading}
                             >
                                 {PAGE_SIZE_OPTIONS.map(size => (
                                     <option key={size} value={size}>{size}</option>
                                 ))}
                             </select>
-                            <span className="text-xs font-medium text-neutral-600">por página</span>
+                            <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">por página</span>
                         </div>
 
                         {/* Info de paginación */}
-                        <p className="text-xs font-medium text-neutral-700 text-center bg-neutral-50 px-4 py-2 rounded-lg border border-neutral-200 order-3 lg:order-none">
+                        <p className="text-xs font-medium text-neutral-700 dark:text-neutral-300 text-center bg-neutral-50 dark:bg-dark-bg px-4 py-2 rounded-lg border border-neutral-200 dark:border-dark-border order-3 lg:order-none">
                             Mostrando <span className="font-bold text-primary">{data.length}</span> de <span className="font-bold text-primary">{totalItems}</span> | Página <span className="font-bold text-primary">{currentPage}</span> de <span className="font-bold text-primary">{totalPages}</span>
                         </p>
 
@@ -516,7 +579,7 @@ const PaginatedDataTable = <T extends BaseItem>({
                             <button
                                 onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
-                                className="px-3 py-2 bg-white border border-neutral-300 rounded-lg text-neutral-700 font-medium hover:bg-primary hover:text-white hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-neutral-700 disabled:hover:border-neutral-300 transition-all duration-200"
+                                className="px-3 py-2 bg-white dark:bg-dark-bg border border-neutral-300 dark:border-dark-border rounded-lg text-neutral-700 dark:text-neutral-300 font-medium hover:bg-primary hover:text-white hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white dark:disabled:hover:bg-dark-bg disabled:hover:text-neutral-700 dark:disabled:hover:text-neutral-300 disabled:hover:border-neutral-300 dark:disabled:hover:border-dark-border transition-all duration-200"
                             >
                                 <FaAngleLeft className="w-4 h-4" />
                             </button>
@@ -526,7 +589,7 @@ const PaginatedDataTable = <T extends BaseItem>({
                             <button
                                 onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}
-                                className="px-3 py-2 bg-white border border-neutral-300 rounded-lg text-neutral-700 font-medium hover:bg-primary hover:text-white hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-neutral-700 disabled:hover:border-neutral-300 transition-all duration-200"
+                                className="px-3 py-2 bg-white dark:bg-dark-bg border border-neutral-300 dark:border-dark-border rounded-lg text-neutral-700 dark:text-neutral-300 font-medium hover:bg-primary hover:text-white hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white dark:disabled:hover:bg-dark-bg disabled:hover:text-neutral-700 dark:disabled:hover:text-neutral-300 disabled:hover:border-neutral-300 dark:disabled:hover:border-dark-border transition-all duration-200"
                             >
                                 <FaAngleRight className="w-4 h-4" />
                             </button>

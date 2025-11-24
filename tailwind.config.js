@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -9,6 +10,13 @@ export default {
       colors: {
         // Color principal de Plaxp
         primary: '#6a48bf',
+        // Color de fondo oscuro
+        dark: {
+          bg: '#13161b',         // Fondo principal oscuro
+          card: '#1a1f27',       // Fondo de tarjetas/cards
+          border: '#2a2f38',     // Bordes en modo oscuro
+          hover: '#252a33',      // Hover en modo oscuro
+        },
         // Colores neutros (grises actualizados)
         neutral: {
           100: '#FAFAFA',        // Fondo muy claro
@@ -46,10 +54,25 @@ export default {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        'fadeInUp': {
+          '0%': { opacity: '0', transform: 'translateY(30px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'fadeInLeft': {
+          '0%': { opacity: '0', transform: 'translateX(-30px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        'fadeInRight': {
+          '0%': { opacity: '0', transform: 'translateX(30px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.5s ease-out',
         'slide-up': 'slide-up 0.6s ease-out',
+        'fadeInUp': 'fadeInUp 0.6s ease-out',
+        'fadeInLeft': 'fadeInLeft 0.7s ease-out',
+        'fadeInRight': 'fadeInRight 0.7s ease-out 0.2s both',
       },
     },
   },

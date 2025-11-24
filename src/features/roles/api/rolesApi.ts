@@ -24,6 +24,7 @@ export const listarRolesApi = async (
   if (params.page) queryParams.append('page', params.page.toString());
   if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
   if (params.q) queryParams.append('q', params.q);
+  if (params.estado) queryParams.append('estado', params.estado);
 
   const url = `roles${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 

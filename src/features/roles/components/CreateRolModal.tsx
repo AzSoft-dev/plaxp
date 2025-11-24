@@ -21,6 +21,7 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
     nombre: '',
     descripcion: '',
     esSuperadmin: false,
+    estado: true,
   });
 
   const [permisos, setPermisos] = useState<Permiso[]>([]);
@@ -41,12 +42,13 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
         nombre: rol.nombre,
         descripcion: rol.descripcion,
         esSuperadmin: rol.esSuperadmin,
+        estado: rol.estado,
       });
       // Cargar permisos asignados al rol
       loadRolPermisos(rol.id);
     } else if (!isOpen) {
       // Reset cuando se cierra
-      setFormData({ nombre: '', descripcion: '', esSuperadmin: false });
+      setFormData({ nombre: '', descripcion: '', esSuperadmin: false, estado: true });
       setSelectedPermisos([]);
       setSelectedModuloFilter('todos');
       setErrors({});
@@ -135,6 +137,7 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
     const { name, value, type } = e.target;
     const fieldValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
 
+    console.log(`🔄 Campo cambiado (modal): ${name} = ${fieldValue} (tipo: ${type})`);
     setFormData(prev => ({ ...prev, [name]: fieldValue }));
 
     // Validar solo si el campo ya fue tocado
@@ -187,6 +190,8 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
       let response;
       let rolId: string;
 
+      console.log('📤 Enviando datos del rol (modal):', formData);
+
       if (isEditMode && rol) {
         // Modo edición: actualizar rol
         response = await actualizarRolApi(rol.id, formData);
@@ -232,21 +237,21 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col create-rol-modal-slide-up">
+      <div className="relative bg-white rounded-2xl shadow-md border border-neutral-100 max-w-4xl w-full max-h-[90vh] flex flex-col create-rol-modal-slide-up">
         {/* Header */}
-        <div className="bg-gradient-to-r from-neutral-100 to-neutral-200 px-4 py-2.5 flex items-center justify-between border-b-2 border-neutral-300 rounded-t-2xl">
+        <div className="bg-white px-4 py-4 flex items-center justify-between border-b border-neutral-100 rounded-t-2xl">
           <div className="flex items-center gap-3">
-            <div className="bg-white p-2.5 rounded-xl shadow-md border border-neutral-300">
-              <FaShieldAlt className="w-5 h-5 text-neutral-600" />
+            <div className="p-2 rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 shadow-md shadow-teal-500/30">
+              <FaShieldAlt className="w-5 h-5 text-white" />
             </div>
-            <h2 className="text-xl font-bold text-neutral-700">
+            <h2 className="text-xl font-bold text-neutral-900">
               {isEditMode ? 'Editar Rol' : 'Crear Nuevo Rol'}
             </h2>
           </div>
           <button
             onClick={onClose}
             disabled={loading}
-            className="text-neutral-500 hover:text-neutral-700 hover:bg-neutral-200 rounded-lg p-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-neutral-500 hover:text-danger hover:bg-danger/10 rounded-xl p-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FaTimes className="w-5 h-5" />
           </button>
@@ -280,35 +285,75 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
             </div>
           )}
 
-          {/* Campo: Nombre */}
-          <div className="space-y-1">
-            <label htmlFor="nombre" className="block text-sm font-bold text-neutral-700">
-              Nombre del Rol <span className="text-neutral-400">*</span>
-            </label>
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              disabled={loading}
-              className={`w-full px-3 py-2 bg-white border-2 rounded-xl focus:outline-none focus:ring-2 transition-all shadow-sm ${
-                errors.nombre
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-neutral-200 focus:border-neutral-400 focus:ring-neutral-200'
-              } disabled:bg-neutral-50 disabled:cursor-not-allowed`}
-              placeholder="Ej: Administrador"
-            />
-            {errors.nombre && (
-              <p className="text-xs text-red-600 font-medium flex items-center gap-1">
-                <FaExclamationCircle className="w-3 h-3" />
-                {errors.nombre}
-              </p>
-            )}
+          {/* Grid de 2 columnas para campos básicos */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* Campo: Nombre */}
+            <div className="space-y-1">
+              <label htmlFor="nombre" className="block text-sm font-bold text-neutral-700">
+                Nombre del Rol <span className="text-neutral-400">*</span>
+              </label>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                disabled={loading}
+                className={`w-full px-3 py-2 bg-white border-2 rounded-xl focus:outline-none focus:ring-2 transition-all shadow-sm ${
+                  errors.nombre
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+                    : 'border-neutral-200 focus:border-neutral-400 focus:ring-neutral-200'
+                } disabled:bg-neutral-50 disabled:cursor-not-allowed`}
+                placeholder="Ej: Administrador"
+              />
+              {errors.nombre && (
+                <p className="text-xs text-red-600 font-medium flex items-center gap-1">
+                  <FaExclamationCircle className="w-3 h-3" />
+                  {errors.nombre}
+                </p>
+              )}
+            </div>
+
+            {/* Campo: Superadmin y Estado */}
+            <div className="space-y-1">
+              <label className="block text-sm font-bold text-neutral-700 mb-1">
+                Configuración
+              </label>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-3 bg-white p-3 rounded-xl border-2 border-neutral-200 shadow-sm hover:shadow-md transition-shadow">
+                  <input
+                    type="checkbox"
+                    id="esSuperadmin"
+                    name="esSuperadmin"
+                    checked={formData.esSuperadmin}
+                    onChange={handleChange}
+                    disabled={loading}
+                    className="w-5 h-5 accent-teal-600 border-neutral-300 rounded focus:ring-2 focus:ring-teal-200 disabled:cursor-not-allowed"
+                  />
+                  <label htmlFor="esSuperadmin" className="text-sm font-bold text-neutral-700 cursor-pointer">
+                    Superadministrador
+                  </label>
+                </div>
+                <div className="flex items-center gap-3 bg-white p-3 rounded-xl border-2 border-neutral-200 shadow-sm hover:shadow-md transition-shadow">
+                  <input
+                    type="checkbox"
+                    id="estado"
+                    name="estado"
+                    checked={formData.estado}
+                    onChange={handleChange}
+                    disabled={loading}
+                    className="w-5 h-5 accent-green-600 border-neutral-300 rounded focus:ring-2 focus:ring-green-200 disabled:cursor-not-allowed"
+                  />
+                  <label htmlFor="estado" className="text-sm font-bold text-neutral-700 cursor-pointer">
+                    Activo
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Campo: Descripción */}
+          {/* Campo: Descripción - full width */}
           <div className="space-y-1">
             <label htmlFor="descripcion" className="block text-sm font-bold text-neutral-700">
               Descripción <span className="text-neutral-400">*</span>
@@ -320,7 +365,7 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={loading}
-              rows={3}
+              rows={2}
               className={`w-full px-3 py-2 bg-white border-2 rounded-xl focus:outline-none focus:ring-2 transition-all shadow-sm ${
                 errors.descripcion
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
@@ -334,22 +379,6 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
                 {errors.descripcion}
               </p>
             )}
-          </div>
-
-          {/* Campo: Superadmin */}
-          <div className="flex items-center gap-3 bg-white p-3 rounded-xl border-2 border-neutral-200 shadow-sm hover:shadow-md transition-shadow">
-            <input
-              type="checkbox"
-              id="esSuperadmin"
-              name="esSuperadmin"
-              checked={formData.esSuperadmin}
-              onChange={handleChange}
-              disabled={loading}
-              className="w-5 h-5 accent-purple-600 border-neutral-300 rounded focus:ring-2 focus:ring-purple-200 disabled:cursor-not-allowed"
-            />
-            <label htmlFor="esSuperadmin" className="text-sm font-bold text-neutral-700 cursor-pointer">
-              Rol de Superadministrador (acceso completo)
-            </label>
           </div>
 
           {/* Selector de Permisos */}
@@ -368,7 +397,7 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
 
               {loadingPermisos ? (
                 <div className="flex items-center justify-center py-12 bg-white rounded-xl border-2 border-neutral-200 shadow-sm">
-                  <CgSpinner className="w-8 h-8 text-neutral-400 animate-spin" />
+                  <CgSpinner className="w-8 h-8 text-primary animate-spin" />
                 </div>
               ) : (
                 <>
@@ -421,7 +450,7 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
                                   if (input) input.indeterminate = algunoSeleccionado && !todosSeleccionados;
                                 }}
                                 onChange={() => handleModuloToggle(modulo)}
-                                className="w-5 h-5 accent-purple-600 border-neutral-300 rounded focus:ring-2 focus:ring-purple-200"
+                                className="w-5 h-5 accent-teal-600 border-neutral-300 rounded focus:ring-2 focus:ring-teal-200"
                               />
                               <FaListUl className="text-neutral-600" />
                               <span className="font-bold text-neutral-800 text-sm flex-1">{modulo}</span>
@@ -429,14 +458,14 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
                                 {countSeleccionados}/{permisosDelModulo.length}
                               </span>
                             </div>
-                            <div className="pl-6 space-y-1.5">
+                            <div className="pl-6 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1.5">
                               {permisosDelModulo.map(permiso => (
                                 <div key={permiso.id} className="flex items-center gap-3 p-1 rounded-lg hover:bg-neutral-50 transition-colors">
                                   <input
                                     type="checkbox"
                                     checked={selectedPermisos.includes(permiso.id)}
                                     onChange={() => handlePermisoToggle(permiso.id)}
-                                    className="w-4 h-4 accent-purple-600 border-neutral-300 rounded focus:ring-2 focus:ring-purple-200"
+                                    className="w-4 h-4 accent-teal-600 border-neutral-300 rounded focus:ring-2 focus:ring-teal-200"
                                   />
                                   <label className="text-sm text-neutral-700 cursor-pointer flex-1">
                                     {permiso.descripcion || permiso.codigo}
@@ -458,13 +487,13 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
         </div>
 
         {/* Footer con botones fijos */}
-        <div className="bg-gradient-to-r from-neutral-100 to-neutral-200 px-4 py-2.5 border-t-2 border-neutral-300 rounded-b-2xl">
+        <div className="bg-white px-4 py-4 border-t border-neutral-100 rounded-b-2xl">
           <div className="flex gap-3">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-2.5 border-2 border-neutral-300 bg-white text-neutral-700 font-bold rounded-xl hover:bg-neutral-50 hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2.5 border border-neutral-200 bg-white text-neutral-700 font-semibold rounded-xl hover:bg-neutral-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancelar
             </button>
@@ -472,7 +501,7 @@ export const CreateRolModal: React.FC<CreateRolModalProps> = ({ isOpen, onClose,
               type="submit"
               disabled={loading}
               onClick={handleSubmit}
-              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-primary to-purple-600 text-white font-bold rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
+              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-teal-600 to-teal-700 text-white font-bold rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
             >
               {loading ? (
                 <>

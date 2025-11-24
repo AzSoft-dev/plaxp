@@ -32,7 +32,7 @@ export const InputField: React.FC<InputFieldProps> = ({
   <div className="relative">
     <label
       htmlFor={id}
-      className="block text-sm font-semibold text-neutral-900 mb-2"
+      className="block text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-2"
     >
       {label}
     </label>
@@ -44,7 +44,7 @@ export const InputField: React.FC<InputFieldProps> = ({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
-      className="w-full px-4 py-3.5 bg-white border-2 border-neutral-200 rounded-lg text-neutral-900 placeholder:text-neutral-400 focus:border-primary focus:ring-4 focus:ring-primary focus:ring-opacity-10 outline-none transition-all duration-200 hover:border-neutral-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-100"
+      className="w-full px-4 py-3.5 bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-primary dark:focus:border-primary focus:ring-4 focus:ring-primary focus:ring-opacity-10 outline-none transition-all duration-200 hover:border-neutral-300 dark:hover:border-neutral-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-100 dark:disabled:bg-neutral-900"
       required
     />
   </div>

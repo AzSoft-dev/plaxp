@@ -1,6 +1,5 @@
-/* Animaciones para CreateUserModal */
-
-@keyframes fade-in {
+/* Animación de fade in para el overlay */
+@keyframes createUserModalFadeIn {
   from {
     opacity: 0;
   }
@@ -9,37 +8,22 @@
   }
 }
 
-@keyframes slide-up {
+/* Animación de slide up para el modal */
+@keyframes createUserModalSlideUp {
   from {
-    transform: translateY(20px);
     opacity: 0;
+    transform: translateY(30px) scale(0.95);
   }
   to {
-    transform: translateY(0);
     opacity: 1;
-  }
-}
-
-@keyframes shake {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-5px);
-  }
-  75% {
-    transform: translateX(5px);
+    transform: translateY(0) scale(1);
   }
 }
 
 .create-user-modal-fade-in {
-  animation: fade-in 0.2s ease-out;
+  animation: createUserModalFadeIn 0.3s ease-out;
 }
 
 .create-user-modal-slide-up {
-  animation: slide-up 0.3s ease-out;
-}
-
-.create-user-modal-shake {
-  animation: shake 0.4s ease-in-out;
+  animation: createUserModalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }

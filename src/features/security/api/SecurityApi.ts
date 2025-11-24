@@ -1,10 +1,14 @@
 import { apiService } from '../../../shared/services/apiService';
 import type {
+  User,
   LoginResponse,
   RecuperacionResponse,
   VerificarCodigoResponse,
   RestablecerContrasenaResponse,
 } from '../schemas/securityApiSchema';
+
+// Re-exportar User para que otros módulos lo puedan importar desde aquí
+export type { User };
 
 /**
  * Login

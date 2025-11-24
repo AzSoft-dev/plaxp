@@ -1,0 +1,50 @@
+/**
+ * Configuración de Electron Builder
+ * @see https://www.electron.build/configuration/configuration
+ */
+{
+  "appId": "com.plaxp.app",
+  "productName": "Plaxp",
+  "copyright": "Copyright © 2025 Plaxp",
+  "directories": {
+    "output": "release",
+    "buildResources": "public"
+  },
+  "files": [
+    "dist/**/*",
+    "dist-electron/**/*",
+    "package.json"
+  ],
+  "extraMetadata": {
+    "main": "dist-electron/main.js"
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "public/icono.png",
+    "artifactName": "${productName}-${version}-Setup.${ext}"
+  },
+  "mac": {
+    "target": ["dmg"],
+    "icon": "public/icono.png",
+    "category": "public.app-category.productivity",
+    "artifactName": "${productName}-${version}.${ext}"
+  },
+  "linux": {
+    "target": ["AppImage", "deb"],
+    "icon": "public/icono.png",
+    "category": "Office",
+    "artifactName": "${productName}-${version}.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Plaxp"
+  }
+}

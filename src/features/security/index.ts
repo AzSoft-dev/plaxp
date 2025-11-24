@@ -8,6 +8,7 @@ export { LoginPage } from './pages/LoginPage';
 export { PasswordRecoveryPage } from './pages/PasswordRecoveryPage';
 export { VerifyCodePage } from './pages/VerifyCodePage';
 export { ResetPasswordPage } from './pages/ResetPasswordPage';
+export { DashboardPage } from './pages/DashboardPage';
 
 // Componentes
 export { LoginCard } from './components/LoginCard';

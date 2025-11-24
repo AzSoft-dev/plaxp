@@ -13,6 +13,8 @@ export interface Usuario {
   ultimoAcceso?: string;
   idRol?: string; // ID del rol (puede venir en algunos endpoints)
   nombreRol?: any; // Nombre del rol (puede venir en algunos endpoints)
+  idSucursalPrincipal?: string; // Sucursal principal
+  idSucursales?: string[]; // Lista de sucursales adicionales
 }
 
 /**
@@ -52,8 +54,10 @@ export interface CrearUsuarioData {
   nombre: string;
   correo: string;
   contrasena: string;
-  estado: boolean;
+  estado: number; // 1 = activo, 0 = inactivo
   idRol: string;
+  idSucursalPrincipal: string; // Sucursal principal (obligatorio)
+  idSucursales?: string[]; // Lista de sucursales adicionales (opcional, puede estar vacía)
 }
 
 /**
@@ -80,8 +84,10 @@ export interface ActualizarUsuarioData {
   nombre: string;
   correo: string;
   contrasena?: string; // Opcional al actualizar
-  estado: boolean;
+  estado: number; // 1 = activo, 0 = inactivo
   idRol: string;
+  idSucursalPrincipal?: string; // Sucursal principal
+  idSucursales?: string[]; // Lista de sucursales adicionales
 }
 
 /**
@@ -115,6 +121,8 @@ export interface UsuarioDetalle {
   fechaModificacion: string;
   idRol: string;
   nombreRol: string;
+  idSucursalPrincipal?: string; // Sucursal principal
+  idSucursales?: string[]; // Lista de sucursales adicionales
 }
 
 /**

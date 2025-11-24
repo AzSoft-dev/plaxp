@@ -57,15 +57,15 @@ export const RoleSelect: React.FC<RoleSelectProps> = ({
 
   return (
     <div className="space-y-2">
-      <label htmlFor="idRol" className="block text-sm font-bold text-neutral-700">
-        Rol {required && <span className="text-neutral-500">*</span>}
+      <label htmlFor="idRol" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300">
+        Rol {required && <span className="text-neutral-500 dark:text-neutral-400">*</span>}
       </label>
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           {loading ? (
-            <CgSpinner className="text-neutral-400 w-4 h-4 animate-spin" />
+            <CgSpinner className="text-primary dark:text-purple-400 w-4 h-4 animate-spin" />
           ) : (
-            <FaShieldAlt className="text-neutral-400 w-4 h-4" />
+            <FaShieldAlt className="text-neutral-400 dark:text-neutral-500 w-4 h-4" />
           )}
         </div>
         <select
@@ -75,11 +75,11 @@ export const RoleSelect: React.FC<RoleSelectProps> = ({
           onChange={handleChange}
           onBlur={onBlur}
           disabled={disabled || loading || !!loadError}
-          className={`w-full pl-10 pr-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all appearance-none ${
+          className={`w-full pl-10 pr-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all appearance-none bg-white dark:bg-dark-bg text-neutral-900 dark:text-neutral-100 ${
             error
-              ? 'border-neutral-400 focus:border-neutral-600 focus:ring-neutral-200'
-              : 'border-neutral-300 focus:border-neutral-500 focus:ring-neutral-200'
-          } disabled:bg-neutral-100 disabled:cursor-not-allowed`}
+              ? 'border-neutral-400 dark:border-red-600 focus:border-neutral-600 dark:focus:border-red-400 focus:ring-neutral-200 dark:focus:ring-red-900/50'
+              : 'border-neutral-300 dark:border-dark-border focus:border-neutral-500 dark:focus:border-neutral-600 focus:ring-neutral-200 dark:focus:ring-neutral-800'
+          } disabled:bg-neutral-100 dark:disabled:bg-neutral-700/50 disabled:cursor-not-allowed`}
         >
           <option value="">
             {loading ? 'Cargando roles...' : loadError ? 'Error al cargar' : 'Seleccione un rol'}
@@ -91,7 +91,7 @@ export const RoleSelect: React.FC<RoleSelectProps> = ({
           ))}
         </select>
         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-          <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-neutral-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </div>
@@ -99,7 +99,7 @@ export const RoleSelect: React.FC<RoleSelectProps> = ({
 
       {/* Mostrar error de validación o de carga */}
       {(error || loadError) && (
-        <p className="text-xs text-neutral-600 font-medium flex items-center gap-1">
+        <p className="text-xs text-neutral-600 dark:text-neutral-400 font-medium flex items-center gap-1">
           <FaExclamationCircle className="w-3 h-3" />
           {error || loadError}
         </p>

@@ -17,6 +17,16 @@ export const LoadingType = {
 export type LoadingType = typeof LoadingType[keyof typeof LoadingType];
 
 /**
+ * Estado de carga
+ */
+export interface LoadingState {
+  type: LoadingType;
+  isLoading: boolean;
+  message?: string;
+  progress?: number;
+}
+
+/**
  * Métodos HTTP soportados
  */
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';

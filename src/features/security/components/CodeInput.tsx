@@ -169,10 +169,10 @@ export const CodeInput: React.FC<CodeInputProps> = ({
               disabled:opacity-50 disabled:cursor-not-allowed
               ${
                 error
-                  ? 'border-danger bg-danger/5 text-danger focus:border-danger focus:ring-danger/20'
+                  ? 'border-danger bg-danger/5 dark:bg-danger/10 text-danger focus:border-danger focus:ring-danger/20'
                   : digit
-                  ? 'border-primary bg-primary/5 text-primary focus:border-primary focus:ring-primary/20'
-                  : 'border-neutral-300 bg-white text-neutral-900 focus:border-primary focus:ring-primary/20 hover:border-neutral-400'
+                  ? 'border-primary bg-primary/5 dark:bg-primary/10 text-primary focus:border-primary focus:ring-primary/20'
+                  : 'border-neutral-300 dark:border-neutral-600 bg-white dark:bg-dark-bg text-neutral-900 dark:text-neutral-100 focus:border-primary focus:ring-primary/20 hover:border-neutral-400 dark:hover:border-neutral-500'
               }
               ${loading ? 'animate-pulse' : ''}
             `}
@@ -193,7 +193,7 @@ export const CodeInput: React.FC<CodeInputProps> = ({
                   ? error
                     ? 'bg-danger'
                     : 'bg-primary'
-                  : 'bg-neutral-300'
+                  : 'bg-neutral-300 dark:bg-neutral-600'
               }
             `}
           />

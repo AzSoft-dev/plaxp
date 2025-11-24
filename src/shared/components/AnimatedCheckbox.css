@@ -1,0 +1,161 @@
+/* Checkbox animado estilo PLAXP */
+.checkbox-wrapper-plaxp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.checkbox-wrapper-plaxp .check {
+  --size: 40px;
+  position: relative;
+  background: linear-gradient(90deg, #8b5cf6, #6a48bf);
+  line-height: 0;
+  perspective: 400px;
+  font-size: var(--size);
+  flex-shrink: 0;
+}
+
+/* Tamaños */
+.checkbox-wrapper-plaxp .check.check-sm {
+  --size: 24px;
+}
+
+.checkbox-wrapper-plaxp .check.check-md {
+  --size: 32px;
+}
+
+.checkbox-wrapper-plaxp .check.check-lg {
+  --size: 40px;
+}
+
+.checkbox-wrapper-plaxp .check input[type="checkbox"],
+.checkbox-wrapper-plaxp .check label,
+.checkbox-wrapper-plaxp .check label::before,
+.checkbox-wrapper-plaxp .check label::after,
+.checkbox-wrapper-plaxp .check {
+  appearance: none;
+  display: inline-block;
+  border-radius: var(--size);
+  border: 0;
+  transition: 0.35s ease-in-out;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.checkbox-wrapper-plaxp .check label {
+  width: calc(2.2 * var(--size));
+  height: var(--size);
+  background: #d7d7d7;
+  overflow: hidden;
+}
+
+/* Dark mode para el label */
+.dark .checkbox-wrapper-plaxp .check label {
+  background: #4a4a4a;
+}
+
+.checkbox-wrapper-plaxp .check input[type="checkbox"] {
+  position: absolute;
+  z-index: 1;
+  width: calc(0.8 * var(--size));
+  height: calc(0.8 * var(--size));
+  top: calc(0.1 * var(--size));
+  left: calc(0.1 * var(--size));
+  background: linear-gradient(45deg, #f5f5f5, #ffffff);
+  box-shadow: 0 6px 7px rgba(0, 0, 0, 0.3);
+  outline: none;
+  margin: 0;
+}
+
+/* Dark mode para el input */
+.dark .checkbox-wrapper-plaxp .check input[type="checkbox"] {
+  background: linear-gradient(45deg, #3a3a3a, #555555);
+}
+
+.checkbox-wrapper-plaxp .check input[type="checkbox"]:checked {
+  left: calc(1.3 * var(--size));
+}
+
+.checkbox-wrapper-plaxp .check input[type="checkbox"]:checked + label {
+  background: transparent;
+}
+
+.checkbox-wrapper-plaxp .check label::before,
+.checkbox-wrapper-plaxp .check label::after {
+  content: "· ·";
+  position: absolute;
+  overflow: hidden;
+  left: calc(0.15 * var(--size));
+  top: calc(0.5 * var(--size));
+  height: var(--size);
+  letter-spacing: calc(-0.04 * var(--size));
+  color: #9b9b9b;
+  font-family: "Times New Roman", serif;
+  z-index: 2;
+  font-size: calc(0.6 * var(--size));
+  border-radius: 0;
+  transform-origin: 0 0 calc(-0.5 * var(--size));
+  backface-visibility: hidden;
+}
+
+.checkbox-wrapper-plaxp .check label::after {
+  content: "●";
+  top: calc(0.65 * var(--size));
+  left: calc(0.2 * var(--size));
+  height: calc(0.1 * var(--size));
+  width: calc(0.35 * var(--size));
+  font-size: calc(0.2 * var(--size));
+  transform-origin: 0 0 calc(-0.4 * var(--size));
+}
+
+.checkbox-wrapper-plaxp .check input[type="checkbox"]:checked + label::before,
+.checkbox-wrapper-plaxp .check input[type="checkbox"]:checked + label::after {
+  left: calc(1.55 * var(--size));
+  top: calc(0.4 * var(--size));
+  line-height: calc(0.1 * var(--size));
+  transform: rotateY(360deg);
+}
+
+.checkbox-wrapper-plaxp .check input[type="checkbox"]:checked + label::after {
+  height: calc(0.16 * var(--size));
+  top: calc(0.55 * var(--size));
+  left: calc(1.6 * var(--size));
+  font-size: calc(0.6 * var(--size));
+  line-height: 0;
+}
+
+/* Estado deshabilitado */
+.checkbox-wrapper-plaxp.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.checkbox-wrapper-plaxp.disabled .check,
+.checkbox-wrapper-plaxp.disabled .check input[type="checkbox"],
+.checkbox-wrapper-plaxp.disabled .check label {
+  cursor: not-allowed;
+}
+
+/* Label del checkbox */
+.checkbox-wrapper-plaxp .checkbox-label {
+  font-size: 0.875rem;
+  color: #3c3c3c;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.dark .checkbox-wrapper-plaxp .checkbox-label {
+  color: #d1d1d1;
+}
+
+.checkbox-wrapper-plaxp.disabled .checkbox-label {
+  cursor: not-allowed;
+}
+
+/* Hover effect */
+.checkbox-wrapper-plaxp:not(.disabled) .check:hover {
+  transform: scale(1.05);
+}

@@ -1,7 +1,8 @@
 import React, { useState, type ReactNode } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/security/hooks/useAuth';
-
+import { ThemeToggle } from '../components';
+import { FaChalkboardTeacher } from 'react-icons/fa';
 interface MainLayoutProps {
   children: ReactNode;
 }
@@ -20,11 +21,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate('/login');
   };
 
   return (
-    <div className="h-screen bg-neutral-100 flex overflow-hidden">
+    <div className="h-screen bg-neutral-100 dark:bg-dark-bg flex overflow-hidden">
       {/* Overlay para móvil */}
       {sidebarOpen && (
         <div
@@ -39,17 +40,18 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           fixed lg:static inset-y-0 left-0 z-50
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'}
-          w-64 h-screen bg-gradient-to-b from-white to-neutral-50 shadow-strong transition-all duration-300 flex flex-col border-r border-neutral-200
+          w-64 h-screen bg-gradient-to-b from-white to-neutral-50 dark:from-dark-card dark:to-dark-bg shadow-strong transition-all duration-300 flex flex-col border-r border-neutral-200 dark:border-dark-border
         `}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center justify-center border-b border-neutral-200 px-4 bg-white/50 backdrop-blur-sm m-6">
+        <div className="h-16 flex items-center justify-center border-b border-neutral-200 dark:border-dark-border px-4 bg-white/50 dark:bg-dark-card/50 backdrop-blur-sm">
           {sidebarCollapsed ? (
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-purple-600 rounded-xl flex items-center justify-center shadow-md transform hover:scale-110 transition-transform">
-              <span className="text-white font-bold text-lg">P</span>
-            </div>
+            <img src="/icono.png" alt="Plaxp" className="w-10 h-10 object-contain transform hover:scale-110 transition-transform" />
           ) : (
-            <img src="/logo.png" alt="Plaxp Logo" className="h-10" />
+            <>
+              <img src="/logo_claro.png" alt="Plaxp Logo" className="h-10 object-contain dark:hidden" />
+              <img src="/logo_oscuro.png" alt="Plaxp Logo" className="h-10 object-contain hidden dark:block" />
+            </>
           )}
         </div>
 
@@ -61,10 +63,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               to="/dashboard"
               onClick={() => setSidebarOpen(false)}
               className={`
-                group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                group flex items-center gap-3 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                ${sidebarCollapsed ? 'justify-center px-0' : 'px-4'}
                 ${location.pathname === '/dashboard'
                   ? 'bg-gradient-to-r from-blue-500/15 to-blue-500/5 text-blue-600 shadow-sm'
-                  : 'text-neutral-700 hover:bg-neutral-100/80'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
                 }
               `}
             >
@@ -109,10 +112,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               to="/usuarios"
               onClick={() => setSidebarOpen(false)}
               className={`
-                group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                group flex items-center gap-3 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                ${sidebarCollapsed ? 'justify-center px-0' : 'px-4'}
                 ${location.pathname === '/usuarios'
                   ? 'bg-gradient-to-r from-purple-500/15 to-purple-500/5 text-purple-600 shadow-sm'
-                  : 'text-neutral-700 hover:bg-neutral-100/80'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
                 }
               `}
             >
@@ -157,10 +161,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               to="/roles"
               onClick={() => setSidebarOpen(false)}
               className={`
-                group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                group flex items-center gap-3 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                ${sidebarCollapsed ? 'justify-center px-0' : 'px-4'}
                 ${location.pathname === '/roles'
                   ? 'bg-gradient-to-r from-teal-500/15 to-teal-500/5 text-teal-600 shadow-sm'
-                  : 'text-neutral-700 hover:bg-neutral-100/80'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
                 }
               `}
             >
@@ -200,9 +205,259 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               )}
             </Link>
 
-            {/* Separador */}
-            <div className="py-2">
-              <div className="h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent"></div>
+            {/* Estudiantes */}
+            <Link
+              to="/estudiantes"
+              onClick={() => setSidebarOpen(false)}
+              className={`
+                group flex items-center gap-3 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                ${sidebarCollapsed ? 'justify-center px-0' : 'px-4'}
+                ${location.pathname === '/estudiantes'
+                  ? 'bg-gradient-to-r from-indigo-500/15 to-indigo-500/5 text-indigo-600 shadow-sm'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
+                }
+              `}
+            >
+              {/* Indicador de página activa */}
+              {location.pathname === '/estudiantes' && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-indigo-600 rounded-r-full"></div>
+              )}
+
+              <div className={`
+                relative z-10 p-2 rounded-lg transition-all duration-200
+                ${location.pathname === '/estudiantes'
+                  ? 'bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-md shadow-indigo-500/30'
+                  : 'bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-md shadow-indigo-500/20 group-hover:shadow-indigo-500/30'
+                }
+              `}>
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 14l9-5-9-5-9 5 9 5z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+                  />
+                </svg>
+              </div>
+              {!sidebarCollapsed && (
+                <span className="relative z-10 font-semibold text-sm">Estudiantes</span>
+              )}
+              {location.pathname === '/estudiantes' && !sidebarCollapsed && (
+                <div className="ml-auto">
+                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>
+                </div>
+              )}
+            </Link>
+
+            {/* Profesores */}
+            <Link
+              to="/profesores"
+              onClick={() => setSidebarOpen(false)}
+              className={`
+                group flex items-center gap-3 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                ${sidebarCollapsed ? 'justify-center px-0' : 'px-4'}
+                ${location.pathname.startsWith('/profesores')
+                  ? 'bg-gradient-to-r from-cyan-500/15 to-cyan-500/5 text-cyan-600 shadow-sm'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
+                }
+              `}
+            >
+              {/* Indicador de página activa */}
+              {location.pathname.startsWith('/profesores') && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-cyan-500 to-cyan-600 rounded-r-full"></div>
+              )}
+
+              <div className={`
+                relative z-10 p-2 rounded-lg transition-all duration-200
+                ${location.pathname.startsWith('/profesores')
+                  ? 'bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-md shadow-cyan-500/30'
+                  : 'bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-md shadow-cyan-500/20 group-hover:shadow-cyan-500/30'
+                }
+              `}>
+                  <FaChalkboardTeacher className="w-5 h-5 md:w-6 md:h-6 text-white" />
+              </div>
+              {!sidebarCollapsed && (
+                <span className="relative z-10 font-semibold text-sm">Profesores</span>
+              )}
+              {location.pathname.startsWith('/profesores') && !sidebarCollapsed && (
+                <div className="ml-auto">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></div>
+                </div>
+              )}
+            </Link>
+
+            {/* Cursos */}
+            <Link
+              to="/cursos"
+              onClick={() => setSidebarOpen(false)}
+              className={`
+                group flex items-center gap-3 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                ${sidebarCollapsed ? 'justify-center px-0' : 'px-4'}
+                ${location.pathname === '/cursos'
+                  ? 'bg-gradient-to-r from-violet-500/15 to-violet-500/5 text-violet-600 shadow-sm'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
+                }
+              `}
+            >
+              {/* Indicador de página activa */}
+              {location.pathname === '/cursos' && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-violet-500 to-violet-600 rounded-r-full"></div>
+              )}
+
+              <div className={`
+                relative z-10 p-2 rounded-lg transition-all duration-200
+                ${location.pathname === '/cursos'
+                  ? 'bg-gradient-to-br from-violet-500 to-violet-600 shadow-md shadow-violet-500/30'
+                  : 'bg-gradient-to-br from-violet-500 to-violet-600 shadow-md shadow-violet-500/20 group-hover:shadow-violet-500/30'
+                }
+              `}>
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                  />
+                </svg>
+              </div>
+              {!sidebarCollapsed && (
+                <span className="relative z-10 font-semibold text-sm">Cursos</span>
+              )}
+              {location.pathname === '/cursos' && !sidebarCollapsed && (
+                <div className="ml-auto">
+                  <div className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></div>
+                </div>
+              )}
+            </Link>
+
+            {/* Categorías */}
+            <Link
+              to="/categorias"
+              onClick={() => setSidebarOpen(false)}
+              className={`
+                group flex items-center gap-3 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                ${sidebarCollapsed ? 'justify-center px-0' : 'px-4'}
+                ${location.pathname === '/categorias'
+                  ? 'bg-gradient-to-r from-amber-500/15 to-amber-500/5 text-amber-600 shadow-sm'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
+                }
+              `}
+            >
+              {/* Indicador de página activa */}
+              {location.pathname === '/categorias' && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-amber-500 to-amber-600 rounded-r-full"></div>
+              )}
+
+              <div className={`
+                relative z-10 p-2 rounded-lg transition-all duration-200
+                ${location.pathname === '/categorias'
+                  ? 'bg-gradient-to-br from-amber-500 to-amber-600 shadow-md shadow-amber-500/30'
+                  : 'bg-gradient-to-br from-amber-500 to-amber-600 shadow-md shadow-amber-500/20 group-hover:shadow-amber-500/30'
+                }
+              `}>
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                  />
+                </svg>
+              </div>
+              {!sidebarCollapsed && (
+                <span className="relative z-10 font-semibold text-sm">Categorías de Cursos</span>
+              )}
+              {location.pathname === '/categorias' && !sidebarCollapsed && (
+                <div className="ml-auto">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
+                </div>
+              )}
+            </Link>
+
+            {/* Sucursales */}
+            <Link
+              to="/sucursales"
+              onClick={() => setSidebarOpen(false)}
+              className={`
+                group flex items-center gap-3 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                ${sidebarCollapsed ? 'justify-center px-0' : 'px-4'}
+                ${location.pathname.startsWith('/sucursales')
+                  ? 'bg-gradient-to-r from-sky-500/15 to-sky-500/5 text-sky-600 shadow-sm'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
+                }
+              `}
+            >
+              {/* Indicador de página activa */}
+              {location.pathname.startsWith('/sucursales') && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-sky-500 to-sky-600 rounded-r-full"></div>
+              )}
+
+              <div className={`
+                relative z-10 p-2 rounded-lg transition-all duration-200
+                ${location.pathname.startsWith('/sucursales')
+                  ? 'bg-gradient-to-br from-sky-500 to-sky-600 shadow-md shadow-sky-500/30'
+                  : 'bg-gradient-to-br from-sky-500 to-sky-600 shadow-md shadow-sky-500/20 group-hover:shadow-sky-500/30'
+                }
+              `}>
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
+                </svg>
+              </div>
+              {!sidebarCollapsed && (
+                <span className="relative z-10 font-semibold text-sm">Sucursales</span>
+              )}
+              {location.pathname.startsWith('/sucursales') && !sidebarCollapsed && (
+                <div className="ml-auto">
+                  <div className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></div>
+                </div>
+              )}
+            </Link>
+
+            {/* Separador - Sistema */}
+            <div className="py-3">
+              <div className="h-px bg-gradient-to-r from-transparent via-neutral-200 dark:via-dark-border to-transparent"></div>
+              {!sidebarCollapsed && (
+                <p className="text-xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mt-3 mb-2 px-4">
+                  Sistema
+                </p>
+              )}
             </div>
 
             {/* Configuración */}
@@ -210,10 +465,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               to="/configuracion"
               onClick={() => setSidebarOpen(false)}
               className={`
-                group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                group flex items-center gap-3 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                ${sidebarCollapsed ? 'justify-center px-0' : 'px-4'}
                 ${location.pathname === '/configuracion'
                   ? 'bg-gradient-to-r from-emerald-500/15 to-emerald-500/5 text-emerald-600 shadow-sm'
-                  : 'text-neutral-700 hover:bg-neutral-100/80'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
                 }
               `}
             >
@@ -264,10 +520,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               to="/reportes"
               onClick={() => setSidebarOpen(false)}
               className={`
-                group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                group flex items-center gap-3 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                ${sidebarCollapsed ? 'justify-center px-0' : 'px-4'}
                 ${location.pathname === '/reportes'
                   ? 'bg-gradient-to-r from-orange-500/15 to-orange-500/5 text-orange-600 shadow-sm'
-                  : 'text-neutral-700 hover:bg-neutral-100/80'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
                 }
               `}
             >
@@ -310,10 +567,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </nav>
 
         {/* Toggle Sidebar Button (solo desktop) */}
-        <div className="hidden lg:block border-t border-neutral-200 p-3 bg-white/50">
+        <div className="hidden lg:block border-t border-neutral-200 dark:border-dark-border p-3 bg-white/50 dark:bg-dark-card/50">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="w-full flex items-center justify-center p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary/5 hover:text-primary text-neutral-600 transition-all duration-200 group"
+            className="w-full flex items-center justify-center p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary/5 hover:text-primary text-neutral-600 dark:text-neutral-400 transition-all duration-200 group"
           >
             <svg
               className={`w-5 h-5 transition-transform duration-300 ${
@@ -337,11 +594,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* Header */}
-        <header className="h-16 bg-white/80 backdrop-blur-md shadow-soft flex items-center justify-between px-4 lg:px-6 border-b border-neutral-200/50 flex-shrink-0">
+        <header className="h-16 bg-white/80 dark:bg-dark-card/80 backdrop-blur-md shadow-soft flex items-center justify-between px-4 lg:px-6 border-b border-neutral-200/50 dark:border-dark-border/50 flex-shrink-0">
           {/* Botón menú hamburguesa (solo móvil) */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="lg:hidden p-2.5 text-neutral-600 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-200"
+            className="lg:hidden p-2.5 text-neutral-600 dark:text-neutral-400 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-200"
           >
             <svg
               className="w-6 h-6"
@@ -365,10 +622,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             {/* User Info */}
             <div className="flex items-center gap-3">
               <div className="hidden sm:block text-right">
-                <p className="text-sm font-medium text-neutral-900">
+                <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                   {user?.nombre || 'Usuario'}
                 </p>
-                <p className="text-xs text-neutral-500">{user?.correo}</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">{user?.correo}</p>
               </div>
 
               {/* Avatar */}
@@ -379,10 +636,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               </div>
             </div>
 
+            {/* Theme Toggle Button */}
+            <ThemeToggle />
+
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="p-2.5 text-neutral-600 hover:text-danger hover:bg-danger/10 rounded-xl transition-all duration-200"
+              className="p-2.5 text-neutral-600 dark:text-neutral-400 hover:text-danger hover:bg-danger/10 rounded-xl transition-all duration-200"
               title="Cerrar sesión"
             >
               <svg
@@ -403,7 +663,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden py-6 px-4 bg-neutral-100">{children}</main>
+        <main className="flex-1 overflow-y-auto overflow-x-hidden py-6 px-4 bg-gray-100 dark:bg-dark-bg">{children}</main>
       </div>
     </div>
   );

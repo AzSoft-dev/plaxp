@@ -71,21 +71,26 @@ export const ResetPasswordCard: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 animate-fade-in">
+    <div className="flex flex-col w-full max-w-md bg-white dark:bg-dark-card rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 animate-fade-in">
       {/* Logo */}
       <div className="p-6 pb-0 text-center">
         <img
-          src="/logo.png"
+          src="/logo_claro.png"
           alt="Plaxp Logo"
-          className="h-12 inline-block"
+          className="h-12 inline-block dark:hidden"
+        />
+        <img
+          src="/logo_oscuro.png"
+          alt="Plaxp Logo"
+          className="h-12 inline-block hidden dark:inline-block"
         />
       </div>
 
       {/* Header con icono */}
-      <div className="bg-white p-6 flex items-center justify-center">
-        <div className="w-32 h-32 bg-success/10 rounded-full flex items-center justify-center">
+      <div className="bg-white dark:bg-dark-card p-6 flex items-center justify-center">
+        <div className="w-32 h-32 bg-success/10 dark:bg-success/20 rounded-full flex items-center justify-center">
           <svg
-            className="w-16 h-16 text-success"
+            className="w-16 h-16 text-success dark:text-success"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -104,10 +109,10 @@ export const ResetPasswordCard: React.FC = () => {
       <div className="p-8 pt-0">
         {/* Encabezado */}
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-neutral-900 mb-2">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             Nueva Contraseña
           </h1>
-          <p className="text-neutral-500 text-sm">
+          <p className="text-neutral-500 dark:text-neutral-400 text-sm">
             Crea una contraseña segura
           </p>
         </div>
@@ -122,7 +127,7 @@ export const ResetPasswordCard: React.FC = () => {
 
           {/* Nueva contraseña */}
           <div>
-            <label htmlFor="newPassword" className="block text-sm font-medium text-neutral-700 mb-2">
+            <label htmlFor="newPassword" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
               Nueva contraseña
             </label>
             <div className="relative">
@@ -132,7 +137,7 @@ export const ResetPasswordCard: React.FC = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 onBlur={() => setTouched({ ...touched, password: true })}
-                className="w-full px-4 py-3 pr-12 border-2 border-neutral-300 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/20 focus:outline-none transition-all"
+                className="w-full px-4 py-3 pr-12 border-2 border-neutral-300 dark:border-neutral-600 dark:bg-dark-bg dark:text-neutral-100 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/20 focus:outline-none transition-all"
                 placeholder="Ingresa tu nueva contraseña"
                 disabled={isLoading}
                 required
@@ -140,7 +145,7 @@ export const ResetPasswordCard: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {showPassword ? (
@@ -173,7 +178,7 @@ export const ResetPasswordCard: React.FC = () => {
 
           {/* Confirmar contraseña */}
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-2">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
               Confirmar contraseña
             </label>
             <div className="relative">
@@ -183,12 +188,12 @@ export const ResetPasswordCard: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 onBlur={() => setTouched({ ...touched, confirm: true })}
-                className={`w-full px-4 py-3 pr-12 border-2 rounded-xl focus:outline-none transition-all ${
+                className={`w-full px-4 py-3 pr-12 border-2 rounded-xl focus:outline-none transition-all dark:bg-dark-bg dark:text-neutral-100 ${
                   touched.confirm && confirmPassword
                     ? passwordsMatch
                       ? 'border-success focus:border-success focus:ring-4 focus:ring-success/20'
                       : 'border-danger focus:border-danger focus:ring-4 focus:ring-danger/20'
-                    : 'border-neutral-300 focus:border-primary focus:ring-4 focus:ring-primary/20'
+                    : 'border-neutral-300 dark:border-neutral-600 focus:border-primary focus:ring-4 focus:ring-primary/20'
                 }`}
                 placeholder="Confirma tu nueva contraseña"
                 disabled={isLoading}
@@ -197,7 +202,7 @@ export const ResetPasswordCard: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {showConfirmPassword ? (

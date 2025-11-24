@@ -1,6 +1,5 @@
-/* Animaciones para ViewUserModal */
-
-@keyframes fade-in {
+/* Animación de fade in para el overlay */
+@keyframes viewUserModalFadeIn {
   from {
     opacity: 0;
   }
@@ -9,21 +8,22 @@
   }
 }
 
-@keyframes slide-up {
+/* Animación de slide up para el modal */
+@keyframes viewUserModalSlideUp {
   from {
-    transform: translateY(20px);
     opacity: 0;
+    transform: translateY(30px) scale(0.95);
   }
   to {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
 .view-user-modal-fade-in {
-  animation: fade-in 0.2s ease-out;
+  animation: viewUserModalFadeIn 0.3s ease-out;
 }
 
 .view-user-modal-slide-up {
-  animation: slide-up 0.3s ease-out;
+  animation: viewUserModalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import PaginatedDataTable, {
   type PaginatedResponse,
   type ColumnDefinition,
@@ -16,9 +17,10 @@ interface User extends BaseItem {
   nombre: string;
   correo: string;
   rol: string;
-  estado: string;
+  estado: JSX.Element;
   ultimoAcceso: string;
   idRol?: string; // ID del rol
+  estadoRaw?: string; // Estado sin transformar para lógica
 }
 
 // Definir columnas
@@ -67,14 +69,27 @@ const fetchUsers = async (
                                   ? 'Activo'
                                   : 'Inactivo';
 
+      const estadoBadge = estadoNormalizado === 'Activo' ? (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-green-100 to-green-50 dark:from-green-900/30 dark:to-green-800/20 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-700 shadow-sm">
+          <FaCheckCircle className="w-3 h-3" />
+          Activo
+        </span>
+      ) : (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-red-100 to-red-50 dark:from-red-900/30 dark:to-red-800/20 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-700 shadow-sm">
+          <FaTimesCircle className="w-3 h-3" />
+          Inactivo
+        </span>
+      );
+
       return {
         id: usuario.id,
         nombre: usuario.nombre,
         correo: usuario.correo,
         rol: usuario.nombreRol,
-        estado: estadoNormalizado,
+        estado: estadoBadge,
         ultimoAcceso: usuario.ultimoAcceso || 'N/A',
         idRol: usuario.idRol, // Incluir idRol
+        estadoRaw: estadoNormalizado,
       };
     });
 
@@ -122,7 +137,7 @@ export const UsersPage = () => {
       id: user.id,
       nombre: user.nombre,
       correo: user.correo,
-      estado: user.estado === 'Activo' ? 'activo' : 'inactivo',
+      estado: user.estadoRaw === 'Activo' ? 'activo' : 'inactivo',
       ultimoAcceso: user.ultimoAcceso,
       nombreRol: user.rol,
       idRol: user.idRol,

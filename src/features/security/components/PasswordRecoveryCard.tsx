@@ -55,26 +55,31 @@ export const PasswordRecoveryCard: React.FC = () => {
   return (
     // Contenedor Principal: Tarjeta de Recuperación (Responsive y Centrada)
     // Se ajusta max-w-lg (mediano) para simular la tarjeta sin la columna lateral
-    <div className="flex w-full max-w-lg h-auto bg-white rounded-2xl shadow-2xl overflow-hidden mx-auto transition-all duration-500">
-      
+    <div className="flex w-full max-w-lg h-auto bg-white dark:bg-dark-card rounded-2xl shadow-2xl overflow-hidden mx-auto transition-all duration-500 animate-fadeInUp">
+
       {/* Columna del Formulario (Ahora es la única columna y ocupa todo el ancho) */}
       <div className="w-full p-8 sm:p-12 lg:p-16 flex flex-col justify-center">
-        
+
         {/* Logo de Marca (Plaxp) */}
         <div className="mb-6 text-center"> {/* Centrado para mejor estética */}
           <img
-            src="/logo.png"
+            src="/logo_claro.png"
             alt="Plaxp Logo"
-            className="h-12 inline-block"
+            className="h-12 inline-block dark:hidden"
+          />
+          <img
+            src="/logo_oscuro.png"
+            alt="Plaxp Logo"
+            className="h-12 inline-block hidden dark:inline-block"
           />
         </div>
 
         {/* Encabezado del Formulario */}
         <div className="mb-8 text-center"> {/* Centrado para mejor estética */}
-          <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             Recuperar Contraseña
           </h1>
-          <p className="text-neutral-500 text-sm sm:text-base">
+          <p className="text-neutral-500 dark:text-neutral-400 text-sm sm:text-base">
             Ingresa tu correo electrónico y te enviaremos un código de recuperación.
           </p>
         </div>
@@ -140,12 +145,12 @@ export const PasswordRecoveryCard: React.FC = () => {
         </form>
 
         {/* Enlace de Regreso al Login */}
-        <div className="mt-8 text-center border-t border-neutral-300 pt-6">
-          <p className="text-sm text-neutral-500">
+        <div className="mt-8 text-center border-t border-neutral-300 dark:border-neutral-700 pt-6">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             ¿Recordaste tu contraseña?{' '}
             <Link
-              to="/"
-              className="font-medium text-primary hover:opacity-80 transition-opacity"
+              to="/login"
+              className="font-medium text-primary dark:text-primary hover:opacity-80 transition-opacity"
             >
               Volver al inicio de sesión
             </Link>

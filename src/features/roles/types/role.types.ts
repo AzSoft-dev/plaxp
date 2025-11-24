@@ -11,6 +11,7 @@ export interface Rol {
   nombre: string;
   descripcion: string;
   esSuperadmin: boolean;
+  estado: boolean;
   creadoEn: string;
 }
 
@@ -42,6 +43,7 @@ export interface ListarRolesParams {
   page?: number;
   pageSize?: number;
   q?: string;
+  estado?: 'activo' | 'inactivo' | 'todos';
 }
 
 /**
@@ -62,6 +64,7 @@ export interface CrearRolData {
   nombre: string;
   descripcion: string;
   esSuperadmin: boolean;
+  estado: boolean;
 }
 
 /**
@@ -80,6 +83,7 @@ export interface ActualizarRolData {
   nombre: string;
   descripcion: string;
   esSuperadmin: boolean;
+  estado: boolean;
 }
 
 /**

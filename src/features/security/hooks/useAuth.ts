@@ -17,16 +17,24 @@ export const useAuth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [localLoading, setLocalLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    setLocalLoading(true);
 
     try {
       await context.login(email, password);
+      // Login exitoso - navegar al dashboard
       navigate('/dashboard');
+      // Esperar 1.5 segundos mostrando la LoadingScreen antes de terminar
+      setTimeout(() => {
+        context.finishLoading();
+      }, 1500);
     } catch (error: any) {
       setError(error?.message || 'Error al iniciar sesión');
+      setLocalLoading(false);
     }
   };
 
@@ -39,7 +47,7 @@ export const useAuth = () => {
     handleLogin,
     isAuthenticated: context.isAuthenticated,
     user: context.user,
-    isLoading: context.isLoading,
+    isLoading: localLoading,
     logout: context.logout,
   };
 };

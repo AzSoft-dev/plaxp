@@ -16,16 +16,27 @@ import {
 } from '../types/api.types';
 import { API_BASE_URL, COMMON_HEADERS, API_TIMEOUTS } from '../config/api.config';
 
+// Callback para manejar errores de autenticación
+type AuthErrorCallback = () => void;
+
 /**
  * Clase principal del servicio de API
  */
 class ApiService {
   private baseURL: string;
   private defaultHeaders: Record<string, string>;
+  private onAuthError: AuthErrorCallback | null = null;
 
   constructor(baseURL: string = API_BASE_URL) {
     this.baseURL = baseURL;
     this.defaultHeaders = { ...COMMON_HEADERS };
+  }
+
+  /**
+   * Registrar callback para errores de autenticación
+   */
+  setAuthErrorCallback(callback: AuthErrorCallback) {
+    this.onAuthError = callback;
   }
 
   /**
@@ -90,6 +101,22 @@ class ApiService {
     // Si la respuesta es exitosa
     if (response.ok) {
       return data;
+    }
+
+    // Detectar errores de autenticación
+    const isAuthError =
+      response.status === 401 ||
+      response.status === 403 ||
+      data?.message?.toLowerCase().includes('token') ||
+      data?.message?.toLowerCase().includes('sesión') ||
+      data?.message?.toLowerCase().includes('autenticación') ||
+      data?.message?.toLowerCase().includes('no autorizado');
+
+    // Si es un error de autenticación, llamar al callback
+    if (isAuthError && this.onAuthError) {
+      console.warn('🔒 Error de autenticación detectado, cerrando sesión...');
+      // Ejecutar callback de manera asíncrona para no bloquear
+      setTimeout(() => this.onAuthError?.(), 0);
     }
 
     // Si hay error, lanzar ApiError personalizado
@@ -263,10 +290,23 @@ class ApiService {
 
     // No establecer Content-Type para FormData, el browser lo hace automáticamente
 
+    // Debug: log detallado del upload
+    console.log('📤 UPLOAD Request:', {
+      endpoint,
+      url,
+      timeout: `${API_TIMEOUTS.upload / 1000}s`,
+      hasAuth: !!token,
+      formDataKeys: Array.from(formData.keys()),
+    });
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUTS.upload);
 
+    const startTime = Date.now();
+
     try {
+      console.log('⏳ Iniciando upload...');
+
       const response = await fetch(url, {
         method: 'POST',
         headers,
@@ -276,9 +316,26 @@ class ApiService {
       });
 
       clearTimeout(timeoutId);
+
+      const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+      console.log(`✅ Upload completado en ${duration}s`, {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+      });
+
       return await this.handleResponse<T>(response);
     } catch (error) {
       clearTimeout(timeoutId);
+
+      const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+      console.error(`❌ Upload falló después de ${duration}s:`, error);
+
+      // Manejar timeout específicamente
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new ApiError(408, 'UPLOAD_TIMEOUT', `El upload excedió el tiempo límite de ${API_TIMEOUTS.upload / 1000}s`);
+      }
+
       throw error;
     }
   }

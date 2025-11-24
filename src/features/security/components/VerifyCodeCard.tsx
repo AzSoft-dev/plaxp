@@ -95,14 +95,14 @@ export const VerifyCodeCard: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 animate-fade-in">
+    <div className="flex flex-col w-full max-w-md bg-white dark:bg-dark-card rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 animate-fade-in">
       {/* Header con icono */}
-      <div className="bg-white p-8 flex items-center justify-center">
+      <div className="bg-white dark:bg-dark-card flex items-center justify-center">
         <div className="flex items-center justify-center">
           <img
-            src="/Login/letter_icon.png"
-            alt="Icono de Correo"
-            className="w-32 h-32 object-contain"
+            src="/Login/Enter-OTP.svg"
+            alt="Ingresa el código OTP"
+            className="w-60 h-60 object-contain dark:brightness-90"
           />
         </div>
       </div>
@@ -111,11 +111,11 @@ export const VerifyCodeCard: React.FC = () => {
       <div className="p-8">
         {/* Encabezado */}
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-neutral-900 mb-2">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             Verificar Código
           </h1>
-          <p className="text-neutral-500 text-sm">
-            Enviado a <span className="font-semibold text-neutral-700">{email}</span>
+          <p className="text-neutral-500 dark:text-neutral-400 text-sm">
+            Enviado a <span className="font-semibold text-neutral-700 dark:text-neutral-300">{email}</span>
           </p>
         </div>
 
@@ -176,14 +176,14 @@ export const VerifyCodeCard: React.FC = () => {
 
         {/* Reenviar código */}
         <div className="text-center mb-6">
-          <p className="text-sm text-neutral-500 mb-2">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
             ¿No recibiste el código?
           </p>
           <button
             type="button"
             onClick={handleResendCode}
             disabled={isLoading || isVerifying || isRedirecting || isResending}
-            className="text-primary font-medium hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+            className="text-primary dark:text-primary font-medium hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
           >
             {isResending && (
               <svg className="animate-spin h-4 w-4 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -196,10 +196,10 @@ export const VerifyCodeCard: React.FC = () => {
         </div>
 
         {/* Instrucciones adicionales */}
-        <div className="p-4 bg-info/5 border border-info/20 rounded-xl mb-6">
+        <div className="p-4 bg-info/5 dark:bg-info/10 border border-info/20 dark:border-info/30 rounded-xl mb-6">
           <div className="flex items-start gap-3">
             <svg
-              className="w-5 h-5 text-info flex-shrink-0 mt-0.5"
+              className="w-5 h-5 text-info dark:text-info flex-shrink-0 mt-0.5"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -210,10 +210,10 @@ export const VerifyCodeCard: React.FC = () => {
               />
             </svg>
             <div>
-              <p className="text-info text-sm font-medium mb-1">
+              <p className="text-info dark:text-info text-sm font-medium mb-1">
                 Sugerencias
               </p>
-              <ul className="text-neutral-600 text-xs space-y-1">
+              <ul className="text-neutral-600 dark:text-neutral-400 text-xs space-y-1">
                 <li>• Revisa tu bandeja de entrada y carpeta de spam</li>
                 <li>• El código expira en 10 minutos</li>
                 <li>• Puedes pegar el código directamente</li>
@@ -223,13 +223,13 @@ export const VerifyCodeCard: React.FC = () => {
         </div>
 
         {/* Enlace de Regreso */}
-        <div className="text-center border-t border-neutral-300 pt-6">
-          <p className="text-sm text-neutral-500">
+        <div className="text-center border-t border-neutral-300 dark:border-neutral-700 pt-6">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             ¿Correo incorrecto?{' '}
             <Link
               to="/password-recovery"
               onClick={handleVolverAIntentar}
-              className="font-medium text-primary hover:opacity-80 transition-opacity"
+              className="font-medium text-primary dark:text-primary hover:opacity-80 transition-opacity"
             >
               Volver a intentar
             </Link>

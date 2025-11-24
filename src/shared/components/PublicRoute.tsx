@@ -17,9 +17,20 @@ export const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
     throw new Error('PublicRoute debe estar dentro de AuthProvider');
   }
 
-  const { isAuthenticated } = authContext;
+  const { isAuthenticated, isLoading, isLoginInProgress } = authContext;
 
-  if (isAuthenticated) {
+  // Si el login fue exitoso, navegar al dashboard
+  if (isLoginInProgress) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // Mientras se verifica la sesión INICIAL (sin login en progreso), no mostrar nada
+  if (isLoading && !isLoginInProgress) {
+    return null;
+  }
+
+  // Si ya está autenticado (sin estar en proceso de login), navegar al dashboard
+  if (isAuthenticated && !isLoginInProgress) {
     return <Navigate to="/dashboard" replace />;
   }
 

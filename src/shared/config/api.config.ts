@@ -12,8 +12,8 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localho
  */
 export const API_TIMEOUTS = {
   default: 30000,      // 30 segundos
-  upload: 300000,      // 5 minutos para uploads
-  download: 300000,    // 5 minutos para downloads
+  upload: 60000,       // 60 segundos para uploads (imágenes máx 1MB)
+  download: 120000,    // 2 minutos para downloads
 } as const;
 
 /**
