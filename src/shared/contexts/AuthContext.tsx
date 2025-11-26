@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { loginApi, type User } from '../../features/security/api/SecurityApi';
 import { apiService } from '../services/apiService';
+import { obtenerUsuarioActualApi } from '../../features/users/api/UsersApi';
 
 /**
  * Interface del contexto de autenticación
@@ -82,6 +83,37 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
    */
 
   /**
+   * Función para obtener datos completos del usuario actual
+   */
+  const fetchUserData = async (): Promise<User | null> => {
+    try {
+      const response = await obtenerUsuarioActualApi();
+      if (response.success && response.data) {
+        // Mapear datos de UsuarioActual a User
+        const userData: User = {
+          id: response.data.id,
+          idEmpresa: response.data.idEmpresa,
+          nombre: response.data.nombre,
+          correo: response.data.correo,
+          estado: response.data.estado,
+          ultimoLogin: response.data.ultimoLogin,
+          idRol: response.data.idRol,
+          nombreRol: response.data.nombreRol,
+          idSucursalPrincipal: response.data.idSucursalPrincipal,
+          idSucursales: response.data.idSucursales,
+          pathFoto: response.data.pathFoto,
+          permisos: response.data.permisos,
+        };
+        return userData;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      return null;
+    }
+  };
+
+  /**
    * Función de login
    */
   const login = async (email: string, password: string) => {
@@ -91,10 +123,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const response = await loginApi(email, password);
 
       if (response.success) {
-        // Guardar usuario en localStorage para persistir la sesión
-        localStorage.setItem('user', JSON.stringify(response.data));
+        // Después del login, obtener los datos completos del usuario
+        const fullUserData = await fetchUserData();
 
-        setUser(response.data);
+        // Si se obtuvieron datos completos, usarlos; si no, usar los del login
+        const userData = fullUserData || response.data;
+
+        // Guardar usuario en localStorage para persistir la sesión
+        localStorage.setItem('user', JSON.stringify(userData));
+
+        setUser(userData);
         setIsAuthenticated(true);
 
         // Marcar que login fue exitoso para mostrar LoadingScreen

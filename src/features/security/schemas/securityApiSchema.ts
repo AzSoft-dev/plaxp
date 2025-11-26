@@ -3,6 +3,16 @@
  */
 
 /**
+ * Permiso del usuario
+ */
+export interface Permiso {
+  id: string;
+  codigo: string;
+  modulo: string;
+  descripcion: string;
+}
+
+/**
  * Usuario autenticado
  */
 export interface User {
@@ -10,9 +20,15 @@ export interface User {
   idEmpresa: string;
   nombre: string;
   correo: string;
-  estado: boolean;
-  ultimoLogin: string;
-  creadoEn: string;
+  estado: boolean | string;
+  ultimoLogin?: string;
+  creadoEn?: string;
+  idRol?: string;
+  nombreRol?: string;
+  idSucursalPrincipal?: string;
+  idSucursales?: string[];
+  pathFoto?: string | null;
+  permisos?: Permiso[];
 }
 
 /**

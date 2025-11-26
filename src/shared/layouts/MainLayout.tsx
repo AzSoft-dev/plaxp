@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/security/hooks/useAuth';
 import { ThemeToggle } from '../components';
 import { FaChalkboardTeacher } from 'react-icons/fa';
+import { UserAvatar } from '../../features/users/components/UserAvatar';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -441,9 +442,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{user?.nombre || 'Usuario'}</p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">{user?.correo}</p>
               </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-purple-600 rounded-full flex items-center justify-center shadow-md ring-2 ring-primary/20 ring-offset-2">
-                <span className="text-white font-bold text-sm">{user?.nombre?.[0]?.toUpperCase() || 'U'}</span>
-              </div>
+              <UserAvatar
+                nombre={user?.nombre || 'Usuario'}
+                pathFoto={user?.pathFoto}
+                size="sm"
+                className="ring-2 ring-primary/20 ring-offset-2"
+              />
             </div>
             <ThemeToggle />
             <button

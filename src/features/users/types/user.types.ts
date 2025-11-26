@@ -135,3 +135,41 @@ export interface ObtenerUsuarioResponse {
   data: UsuarioDetalle;
   message: string;
 }
+
+/**
+ * Permiso del usuario
+ */
+export interface Permiso {
+  id: string;
+  codigo: string;
+  modulo: string;
+  descripcion: string;
+}
+
+/**
+ * Datos del usuario actual (endpoint /me)
+ */
+export interface UsuarioActual {
+  id: string;
+  idEmpresa: string;
+  nombre: string;
+  correo: string;
+  estado: string;
+  ultimoLogin?: string;
+  idRol: string;
+  nombreRol: string;
+  idSucursalPrincipal?: string;
+  idSucursales?: string[];
+  pathFoto?: string | null;
+  permisos: Permiso[];
+}
+
+/**
+ * Respuesta de obtener usuario actual
+ * GET /api/usuarios/me
+ */
+export interface ObtenerUsuarioActualResponse {
+  success: boolean;
+  data: UsuarioActual;
+  message: string;
+}

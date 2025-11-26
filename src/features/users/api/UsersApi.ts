@@ -7,6 +7,7 @@ import type {
   ActualizarUsuarioData,
   ActualizarUsuarioResponse,
   ObtenerUsuarioResponse,
+  ObtenerUsuarioActualResponse,
 } from '../types/user.types';
 
 /**
@@ -137,4 +138,19 @@ export const actualizarUsuarioApi = async (
   }
 
   return await apiService.uploadPut<ActualizarUsuarioResponse>(`usuarios/${id}`, formData);
+};
+
+/**
+ * Obtener el usuario actual (autenticado)
+ * GET /api/usuarios/me
+ *
+ * Retorna información del usuario actual incluyendo:
+ * - Datos básicos (id, nombre, correo, estado)
+ * - Información del rol
+ * - Sucursales asignadas
+ * - Foto de perfil
+ * - Permisos
+ */
+export const obtenerUsuarioActualApi = async (): Promise<ObtenerUsuarioActualResponse> => {
+  return await apiService.get<ObtenerUsuarioActualResponse>('usuarios/me');
 };

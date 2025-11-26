@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 
-const GEMINI_API_KEY = 'AIzaSyDpPgx_owDJZ0xme1Ld8CNiUQElqwA-398';
+const GEMINI_API_KEY = 'AIzaSyC33SaHXRwYI-Gh7u3vkTNWuT_FpKcpMoE';
 
 // Contexto de PLAXP para Gemini
 const PLAXP_CONTEXT = `
@@ -120,7 +120,7 @@ class GeminiService {
 
       // Enviar a Gemini
       const response = await this.ai.models.generateContent({
-        model: 'models/gemini-2.0-flash',
+        model: 'models/gemini-2.5-flash-lite',
         contents: prompt,
       });
 
