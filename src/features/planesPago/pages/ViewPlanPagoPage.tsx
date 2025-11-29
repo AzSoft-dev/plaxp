@@ -314,7 +314,7 @@ export const ViewPlanPagoPage: React.FC = () => {
                       {getPeriodicidadLabel(plan.periodicidadValor, plan.idPeriodicidadUnidad)}
                     </p>
                     <p className="text-xs text-purple-600 dark:text-purple-400">
-                      Se cobrará {formatMonto(plan.total, moneda)} de forma recurrente
+                      Se cobrará de forma recurrente {formatMonto(plan.total, moneda)} 
                     </p>
                   </div>
                 </div>

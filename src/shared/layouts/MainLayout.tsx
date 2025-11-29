@@ -1,10 +1,14 @@
-import React, { useState, useEffect, type ReactNode } from 'react';
+import React, { useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/security/hooks/useAuth';
 import { ThemeToggle } from '../components';
-import { FaChalkboardTeacher, FaSyncAlt, FaCreditCard } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaSyncAlt, FaCreditCard, FaUser, FaSignOutAlt, FaCamera } from 'react-icons/fa';
+import { HiX, HiChevronDown } from 'react-icons/hi';
+import { CgSpinner } from 'react-icons/cg';
 import { UserAvatar } from '../../features/users/components/UserAvatar';
 import { usePermissions } from '../hooks/usePermissions';
+import { actualizarUsuarioApi } from '../../features/users/api/UsersApi';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -46,6 +50,26 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Estado para el dropdown del usuario
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const userButtonRef = useRef<HTMLButtonElement>(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+
+  // Estado para el modal de editar perfil
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileSuccess, setProfileSuccess] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileForm, setProfileForm] = useState({
+    nombre: '',
+    contrasena: '',
+    confirmarContrasena: '',
+  });
+  const [profileFoto, setProfileFoto] = useState<File | null>(null);
+  const [profilePreviewUrl, setProfilePreviewUrl] = useState<string | null>(null);
+  const profileFileInputRef = useRef<HTMLInputElement>(null);
+
   // Persistir modo en localStorage
   useEffect(() => {
     localStorage.setItem(SIDEBAR_MODE_KEY, sidebarMode);
@@ -64,6 +88,134 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       console.error('Error al actualizar permisos:', error);
     } finally {
       setRefreshingPermissions(false);
+    }
+  };
+
+  // Cerrar dropdown del usuario al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node) &&
+          userButtonRef.current && !userButtonRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    if (userMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [userMenuOpen]);
+
+  // Calcular posición del menú cuando se abre
+  const toggleUserMenu = () => {
+    if (!userMenuOpen && userButtonRef.current) {
+      const rect = userButtonRef.current.getBoundingClientRect();
+      setMenuPosition({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right
+      });
+    }
+    setUserMenuOpen(!userMenuOpen);
+  };
+
+  // Abrir modal de perfil
+  const openProfileModal = () => {
+    setProfileForm({
+      nombre: user?.nombre || '',
+      contrasena: '',
+      confirmarContrasena: '',
+    });
+    setProfileFoto(null);
+    setProfilePreviewUrl(null);
+    setProfileError(null);
+    setProfileSuccess(false);
+    setProfileModalOpen(true);
+    setUserMenuOpen(false);
+  };
+
+  // Cerrar modal de perfil
+  const closeProfileModal = () => {
+    if (!profileLoading) {
+      setProfileModalOpen(false);
+      setProfileError(null);
+      setProfileSuccess(false);
+    }
+  };
+
+  // Manejar foto de perfil
+  const handleProfileFotoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setProfileError('El archivo debe ser una imagen');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setProfileError('La imagen no debe superar los 5MB');
+        return;
+      }
+      setProfileFoto(file);
+      setProfilePreviewUrl(URL.createObjectURL(file));
+      setProfileError(null);
+    }
+  }, []);
+
+  // Guardar perfil
+  const handleSaveProfile = async () => {
+    setProfileError(null);
+
+    // Validaciones
+    if (!profileForm.nombre.trim()) {
+      setProfileError('El nombre es requerido');
+      return;
+    }
+    if (profileForm.nombre.trim().length < 3) {
+      setProfileError('El nombre debe tener al menos 3 caracteres');
+      return;
+    }
+    if (profileForm.contrasena && profileForm.contrasena.length < 6) {
+      setProfileError('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+    if (profileForm.contrasena !== profileForm.confirmarContrasena) {
+      setProfileError('Las contraseñas no coinciden');
+      return;
+    }
+
+    setProfileLoading(true);
+
+    try {
+      const updateData: any = {
+        nombre: profileForm.nombre.trim(),
+        correo: user?.correo || '',
+        estado: 1,
+        idRol: user?.idRol || '',
+      };
+
+      if (profileForm.contrasena) {
+        updateData.contrasena = profileForm.contrasena;
+      }
+
+      const response = await actualizarUsuarioApi(
+        user?.id || '',
+        updateData,
+        profileFoto || undefined
+      );
+
+      if (response.success) {
+        setProfileSuccess(true);
+        // Refrescar los datos del usuario
+        await refreshPermissions();
+        setTimeout(() => {
+          closeProfileModal();
+        }, 1500);
+      } else {
+        setProfileError(response.message || 'Error al actualizar el perfil');
+      }
+    } catch (error: any) {
+      console.error('Error al actualizar perfil:', error);
+      setProfileError(error.message || 'Error al actualizar el perfil');
+    } finally {
+      setProfileLoading(false);
     }
   };
 
@@ -721,7 +873,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <h1></h1>
 
           <div className="flex items-center gap-2 lg:gap-4">
-            <div className="flex items-center gap-3">
+            {/* Botón del usuario */}
+            <button
+              ref={userButtonRef}
+              onClick={toggleUserMenu}
+              className="flex items-center gap-2 lg:gap-3 p-1.5 lg:p-2 rounded-xl hover:bg-neutral-100 dark:hover:bg-dark-hover transition-all duration-200"
+            >
               <div className="hidden sm:block text-right">
                 <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{user?.nombre || 'Usuario'}</p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">{user?.correo}</p>
@@ -730,32 +887,257 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 nombre={user?.nombre || 'Usuario'}
                 pathFoto={user?.pathFoto}
                 size="sm"
-                className="ring-2 ring-primary/20 ring-offset-2"
+                className="ring-2 ring-primary/20 ring-offset-2 dark:ring-offset-dark-card"
               />
-            </div>
-            <button
-              onClick={handleRefreshPermissions}
-              disabled={refreshingPermissions}
-              className="p-2 text-neutral-600 dark:text-neutral-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all duration-200 disabled:opacity-50"
-              title="Actualizar permisos"
-            >
-              <FaSyncAlt className={`w-4 h-4 ${refreshingPermissions ? 'animate-spin' : ''}`} />
+              <HiChevronDown className={`w-4 h-4 text-neutral-500 dark:text-neutral-400 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
             </button>
+
             <ThemeToggle />
-            <button
-              onClick={handleLogout}
-              className="p-2 text-neutral-600 dark:text-neutral-400 hover:text-danger hover:bg-danger/10 rounded-lg transition-all duration-200"
-              title="Cerrar sesión"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
           </div>
         </header>
 
         <main className="flex-1 overflow-y-auto overflow-x-hidden py-2 px-2 md:py-6 md:px-4 bg-gray-100 dark:bg-dark-bg">{children}</main>
       </div>
+
+      {/* Dropdown del usuario - renderizado con Portal */}
+      {userMenuOpen && createPortal(
+        <div
+          ref={userMenuRef}
+          className="w-48 bg-white dark:bg-dark-card rounded-lg shadow-lg border border-neutral-200 dark:border-dark-border py-1"
+          style={{
+            position: 'fixed',
+            top: menuPosition.top,
+            right: menuPosition.right,
+            zIndex: 2147483647
+          }}
+        >
+          <button
+            onClick={openProfileModal}
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-dark-hover transition-colors"
+          >
+            <FaUser className="w-4 h-4 text-neutral-500" />
+            <span>Mi Perfil</span>
+          </button>
+
+          <button
+            onClick={() => { handleRefreshPermissions(); setUserMenuOpen(false); }}
+            disabled={refreshingPermissions}
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-dark-hover transition-colors disabled:opacity-50"
+          >
+            <FaSyncAlt className={`w-4 h-4 text-neutral-500 ${refreshingPermissions ? 'animate-spin' : ''}`} />
+            <span>Actualizar permisos</span>
+          </button>
+
+          <div className="my-1 border-t border-neutral-200 dark:border-dark-border"></div>
+
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+          >
+            <FaSignOutAlt className="w-4 h-4" />
+            <span>Cerrar sesión</span>
+          </button>
+        </div>,
+        document.body
+      )}
+
+      {/* Modal de editar perfil */}
+      {profileModalOpen && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 2147483647,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(4px)'
+          }}
+          onClick={(e) => { if (e.target === e.currentTarget) closeProfileModal(); }}
+        >
+          <div
+            className="bg-white dark:bg-dark-card rounded-xl shadow-xl border border-neutral-200 dark:border-dark-border"
+            style={{ width: '100%', maxWidth: '420px', margin: '0 16px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200 dark:border-dark-border">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Editar Perfil</h2>
+              <button
+                onClick={closeProfileModal}
+                disabled={profileLoading}
+                className="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 rounded transition-colors"
+              >
+                <HiX className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Contenido */}
+            <div className="p-5 max-h-[70vh] overflow-y-auto">
+              {/* Loading */}
+              {profileLoading && (
+                <div className="flex items-center justify-center py-8">
+                  <CgSpinner className="w-8 h-8 text-purple-600 animate-spin" />
+                </div>
+              )}
+
+              {/* Success */}
+              {profileSuccess && !profileLoading && (
+                <div className="flex flex-col items-center py-8">
+                  <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-3">
+                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">Perfil actualizado</p>
+                </div>
+              )}
+
+              {/* Formulario */}
+              {!profileLoading && !profileSuccess && (
+                <div className="space-y-4">
+                  {/* Error */}
+                  {profileError && (
+                    <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                      <p className="text-sm text-red-600 dark:text-red-400">{profileError}</p>
+                    </div>
+                  )}
+
+                  {/* Foto de perfil */}
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                      Foto de perfil
+                    </label>
+                    <div className="flex items-center gap-4">
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden bg-neutral-200 dark:bg-dark-hover flex-shrink-0">
+                        {profilePreviewUrl ? (
+                          <img src={profilePreviewUrl} alt="Preview" className="w-full h-full object-cover" />
+                        ) : user?.pathFoto ? (
+                          <img src={user.pathFoto} alt="Foto actual" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-purple-100 dark:bg-purple-900/30">
+                            <span className="text-purple-600 dark:text-purple-400 text-xl font-semibold">
+                              {user?.nombre?.charAt(0).toUpperCase() || 'U'}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <input
+                          ref={profileFileInputRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          onChange={handleProfileFotoChange}
+                          className="hidden"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => profileFileInputRef.current?.click()}
+                          className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-purple-600 dark:text-purple-400 border border-purple-300 dark:border-purple-700 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                        >
+                          <FaCamera className="w-3.5 h-3.5" />
+                          Cambiar foto
+                        </button>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">JPG, PNG o WebP. Máx 5MB</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nombre */}
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                      Nombre
+                    </label>
+                    <input
+                      type="text"
+                      value={profileForm.nombre}
+                      onChange={(e) => setProfileForm(prev => ({ ...prev, nombre: e.target.value }))}
+                      className="w-full px-3 py-2 border border-neutral-300 dark:border-dark-border rounded-lg text-sm bg-white dark:bg-dark-bg text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    />
+                  </div>
+
+                  {/* Correo (disabled) */}
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                      Correo
+                    </label>
+                    <input
+                      type="email"
+                      value={user?.correo || ''}
+                      disabled
+                      className="w-full px-3 py-2 border border-neutral-200 dark:border-dark-border rounded-lg text-sm bg-neutral-50 dark:bg-dark-hover text-neutral-500 cursor-not-allowed"
+                    />
+                  </div>
+
+                  {/* Rol (disabled) */}
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                      Rol
+                    </label>
+                    <input
+                      type="text"
+                      value={user?.nombreRol || ''}
+                      disabled
+                      className="w-full px-3 py-2 border border-neutral-200 dark:border-dark-border rounded-lg text-sm bg-neutral-50 dark:bg-dark-hover text-neutral-500 cursor-not-allowed"
+                    />
+                  </div>
+
+                  <div className="pt-2">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">Cambiar contraseña (opcional)</p>
+
+                    {/* Nueva contraseña */}
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                        Nueva contraseña
+                      </label>
+                      <input
+                        type="password"
+                        value={profileForm.contrasena}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, contrasena: e.target.value }))}
+                        placeholder="Mínimo 6 caracteres"
+                        className="w-full px-3 py-2 border border-neutral-300 dark:border-dark-border rounded-lg text-sm bg-white dark:bg-dark-bg text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                      />
+                    </div>
+
+                    {/* Confirmar */}
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                        Confirmar contraseña
+                      </label>
+                      <input
+                        type="password"
+                        value={profileForm.confirmarContrasena}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, confirmarContrasena: e.target.value }))}
+                        className="w-full px-3 py-2 border border-neutral-300 dark:border-dark-border rounded-lg text-sm bg-white dark:bg-dark-bg text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            {!profileLoading && !profileSuccess && (
+              <div className="flex gap-3 px-5 py-4 border-t border-neutral-200 dark:border-dark-border">
+                <button
+                  onClick={closeProfileModal}
+                  className="flex-1 px-4 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSaveProfile}
+                  className="flex-1 px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
+                >
+                  Guardar
+                </button>
+              </div>
+            )}
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
