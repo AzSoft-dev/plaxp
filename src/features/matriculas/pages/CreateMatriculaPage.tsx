@@ -110,6 +110,7 @@ export const CreateMatriculaPage = () => {
   const [periodosLectivos, setPeriodosLectivos] = useState<PeriodoLectivo[]>([]);
   const [loadingPlanes, setLoadingPlanes] = useState(false);
   const [loadingPeriodos, setLoadingPeriodos] = useState(false);
+  const [planSearch, setPlanSearch] = useState('');
 
   // Errores de validación
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -146,22 +147,33 @@ export const CreateMatriculaPage = () => {
     }
   }, [showEstudianteModal, estudiantesPage, estudianteSearch, fetchEstudiantes]);
 
-  useEffect(() => {
-    const fetchPlanes = async () => {
-      setLoadingPlanes(true);
-      try {
-        const response = await listarPlanesPagoApi({ activo: true, limit: 100 });
-        if (response.success) {
-          setPlanesPago(response.data.planesPago);
-        }
-      } catch (err) {
-        console.error('Error al cargar planes de pago:', err);
-      } finally {
-        setLoadingPlanes(false);
+  // Cargar planes de pago con búsqueda
+  const fetchPlanes = useCallback(async (search?: string) => {
+    setLoadingPlanes(true);
+    try {
+      const response = await listarPlanesPagoApi({
+        activo: true,
+        limit: 100,
+        q: search || undefined,
+      });
+      if (response.success) {
+        setPlanesPago(response.data.planesPago);
       }
-    };
-    fetchPlanes();
+    } catch (err) {
+      console.error('Error al cargar planes de pago:', err);
+    } finally {
+      setLoadingPlanes(false);
+    }
   }, []);
+
+  useEffect(() => {
+    if (showPlanModal && modalPlanStep === 'select') {
+      const timer = setTimeout(() => {
+        fetchPlanes(planSearch);
+      }, planSearch ? 300 : 0);
+      return () => clearTimeout(timer);
+    }
+  }, [showPlanModal, modalPlanStep, planSearch, fetchPlanes]);
 
   useEffect(() => {
     const fetchPeriodos = async () => {
@@ -550,6 +562,7 @@ export const CreateMatriculaPage = () => {
       setShowPlanModal(false);
       setModalPlanStep('select');
       setTempSelectedPlan(null);
+      setPlanSearch('');
     };
 
     return (
@@ -576,6 +589,20 @@ export const CreateMatriculaPage = () => {
                 >
                   <FaTimes className="w-4 h-4 text-neutral-500" />
                 </button>
+              </div>
+
+              {/* Search */}
+              <div className="px-5 py-3 border-b border-neutral-200 dark:border-dark-border">
+                <div className="relative">
+                  <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 w-4 h-4" />
+                  <input
+                    type="text"
+                    value={planSearch}
+                    onChange={(e) => setPlanSearch(e.target.value)}
+                    placeholder="Buscar plan de pago..."
+                    className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-neutral-900 dark:text-neutral-100 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                  />
+                </div>
               </div>
 
               {/* Content */}
@@ -610,6 +637,11 @@ export const CreateMatriculaPage = () => {
                             </div>
                             <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
                               {getTipoPagoLabel(plan.tipoPago)}
+                              {plan.moneda && (
+                                <span className="ml-2 text-xs bg-neutral-100 dark:bg-dark-hover px-1.5 py-0.5 rounded">
+                                  {plan.moneda.codigo}
+                                </span>
+                              )}
                             </p>
                           </div>
                           <div className="text-right">
@@ -1007,6 +1039,7 @@ export const CreateMatriculaPage = () => {
                       </p>
                       <p className="text-sm text-green-600 dark:text-green-400">
                         {getTipoPagoLabel(selectedPlan.tipoPago)} • {formatCurrency(selectedPlan.total, selectedPlan.moneda?.simbolo)}
+                        {selectedPlan.moneda && ` (${selectedPlan.moneda.codigo})`}
                       </p>
                     </div>
                   </div>

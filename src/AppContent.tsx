@@ -12,6 +12,7 @@ import { PeriodosLectivosPage, CreateEditPeriodoLectivoPage, ViewPeriodoLectivoP
 import { PlanesPagoPage, CreateEditPlanPagoPage, ViewPlanPagoPage } from './features/planesPago';
 import { MatriculasPagosPage, ViewMatriculaPagoPage } from './features/matriculasPagos';
 import { MatriculasPage, ViewMatriculaPage, CreateMatriculaPage } from './features/matriculas';
+import { CrmTableroPage, CrmEtapasPage } from './features/crm';
 import { LandingPage } from './features/homePage/pages/LandingPage';
 import { DemoPage } from './features/homePage/pages/DemoPage';
 import { DemoSchedulePage } from './features/homePage/pages/DemoSchedulePage';
@@ -395,6 +396,23 @@ export const AppContent = () => {
         <ProtectedRoute>
           <MainLayout>
             <ViewMatriculaPagoPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+
+      {/* Rutas de CRM Pipeline */}
+      <Route path="/crm" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <CrmTableroPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/crm/etapas" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <CrmEtapasPage />
           </MainLayout>
         </ProtectedRoute>
       } />

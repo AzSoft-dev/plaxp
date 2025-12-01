@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/security/hooks/useAuth';
 import { ThemeToggle } from '../components';
-import { FaChalkboardTeacher, FaSyncAlt, FaCreditCard, FaReceipt, FaUser, FaSignOutAlt, FaCamera, FaClipboardList } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaSyncAlt, FaCreditCard, FaReceipt, FaUser, FaSignOutAlt, FaCamera, FaClipboardList, FaColumns } from 'react-icons/fa';
 import { HiX, HiChevronDown } from 'react-icons/hi';
 import { CgSpinner } from 'react-icons/cg';
 import { UserAvatar } from '../../features/users/components/UserAvatar';
@@ -598,6 +598,50 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 </div>
                 <span className={`relative z-10 font-medium text-sm transition-opacity duration-200 ${isCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100'}`}>
                   Sucursales
+                </span>
+              </Link>
+            )}
+
+            {/* Separador - CRM */}
+            {hasPermission('crm.ver') && (
+              <>
+                <div className={`mt-4 mb-1 px-3 transition-opacity duration-200 ${isCollapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>
+                    <p className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
+                      CRM
+                    </p>
+                </div>
+                {isCollapsed && <div className="h-4"></div>}
+              </>
+            )}
+
+            {/* Pipeline CRM */}
+            {hasPermission('crm.ver') && (
+              <Link
+                to="/crm"
+                onClick={() => setMobileSidebarOpen(false)}
+                className={`
+                  group flex items-center gap-3 py-2 rounded-lg transition-all duration-200 relative overflow-hidden whitespace-nowrap
+                  ${isCollapsed ? 'justify-center px-0' : 'px-3'}
+                  ${location.pathname.startsWith('/crm')
+                    ? 'bg-gradient-to-r from-pink-500/15 to-pink-500/5 text-pink-600 shadow-sm'
+                    : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
+                  }
+                `}
+              >
+                {location.pathname.startsWith('/crm') && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-gradient-to-b from-pink-500 to-pink-600 rounded-r-full"></div>
+                )}
+                <div className={`
+                  relative z-10 p-1.5 rounded-md transition-all duration-200 flex-shrink-0
+                  ${location.pathname.startsWith('/crm')
+                    ? 'bg-gradient-to-br from-pink-500 to-pink-600 shadow-md shadow-pink-500/30'
+                    : 'bg-gradient-to-br from-pink-500 to-pink-600 shadow-md shadow-pink-500/20 group-hover:shadow-pink-500/30'
+                  }
+                `}>
+                  <FaColumns className="w-4 h-4 text-white" />
+                </div>
+                <span className={`relative z-10 font-medium text-sm transition-opacity duration-200 ${isCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100'}`}>
+                  Pipeline
                 </span>
               </Link>
             )}

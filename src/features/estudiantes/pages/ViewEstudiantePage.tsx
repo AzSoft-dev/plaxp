@@ -248,82 +248,92 @@ export const ViewEstudiantePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Sucursal */}
-      {estudiante.idSucursal && (
-        <div className="bg-white dark:bg-dark-card rounded-xl border border-neutral-100 dark:border-dark-border p-4 md:p-6 shadow-md mb-6">
-          <div className="flex items-center gap-2 mb-4">
+      {/* Información adicional en grid de 2 columnas */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Sucursal y Dirección */}
+        <div className="bg-white dark:bg-dark-card rounded-xl border border-neutral-100 dark:border-dark-border p-4 md:p-6 shadow-md">
+          <div className="flex items-center gap-2 mb-5">
             <div className="p-2 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30">
               <FaBuilding className="w-4 h-4 text-blue-700 dark:text-blue-400" />
             </div>
-            <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">Sucursal</h3>
-          </div>
-          <div className="bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-neutral-700 dark:text-neutral-300">Sucursal asignada:</span>
-              <span className="text-sm font-bold text-blue-700 dark:text-blue-400">
-                {getSucursalNombre(estudiante.idSucursal)}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Información de Moodle */}
-      <div className="bg-white dark:bg-dark-card rounded-xl border border-neutral-100 dark:border-dark-border p-4 md:p-6 shadow-md mb-6">
-        <div className="flex items-center gap-2 mb-5">
-          <FaGraduationCap className="w-4 h-4 text-neutral-700 dark:text-neutral-300" />
-          <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">Información de Moodle</h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-          <div className="pb-3 md:pb-0 border-b md:border-b-0 border-neutral-200 dark:border-dark-border">
-            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide block mb-2">
-              Nombre de Usuario
-            </label>
-            <div className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
-              <FaUser className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
-              <span className="text-sm">{estudiante.nombreUsuario || 'N/A'}</span>
-            </div>
+            <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">Ubicación</h3>
           </div>
 
-          <div className="pb-3 md:pb-0 border-b md:border-b-0 border-neutral-200 dark:border-dark-border">
-            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide block mb-2">
-              ID Moodle
-            </label>
-            <div className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
-              <FaIdCard className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
-              <span className="text-sm">{estudiante.idMoodle || 'N/A'}</span>
-            </div>
-          </div>
-
-          {estudiante.contrasenaTemporal && (
-            <div className="pb-3 md:pb-0 border-b md:border-b-0 border-neutral-200 dark:border-dark-border">
-              <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide block mb-2">
-                Contraseña Temporal
-              </label>
-              <div className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
-                <FaKey className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
-                <span className="text-sm font-mono">{estudiante.contrasenaTemporal}</span>
+          <div className="space-y-4">
+            {estudiante.idSucursal && (
+              <div>
+                <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide block mb-2">
+                  Sucursal
+                </label>
+                <div className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
+                  <FaBuilding className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+                  <span className="text-sm font-medium">{getSucursalNombre(estudiante.idSucursal)}</span>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      </div>
+            )}
 
-      {/* Dirección */}
-      {estudiante.direccion && (
+            {estudiante.direccion && (
+              <div>
+                <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide block mb-2">
+                  Dirección
+                </label>
+                <div className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
+                  <FaMapMarkerAlt className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+                  <span className="text-sm">{estudiante.direccion}</span>
+                </div>
+              </div>
+            )}
+
+            {!estudiante.idSucursal && !estudiante.direccion && (
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">Sin información de ubicación</p>
+            )}
+          </div>
+        </div>
+
+        {/* Información de Moodle */}
         <div className="bg-white dark:bg-dark-card rounded-xl border border-neutral-100 dark:border-dark-border p-4 md:p-6 shadow-md">
           <div className="flex items-center gap-2 mb-5">
-            <FaMapMarkerAlt className="w-4 h-4 text-neutral-700 dark:text-neutral-300" />
-            <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">Dirección</h3>
+            <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-100 to-indigo-200 dark:from-indigo-900/30 dark:to-indigo-800/30">
+              <FaGraduationCap className="w-4 h-4 text-indigo-700 dark:text-indigo-400" />
+            </div>
+            <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">Información de Moodle</h3>
           </div>
 
-          <div className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
-            <FaMapMarkerAlt className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
-            <span className="text-sm">{estudiante.direccion}</span>
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide block mb-2">
+                Nombre de Usuario
+              </label>
+              <div className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
+                <FaUser className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+                <span className="text-sm">{estudiante.nombreUsuario || 'N/A'}</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide block mb-2">
+                ID Moodle
+              </label>
+              <div className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
+                <FaIdCard className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+                <span className="text-sm">{estudiante.idMoodle || 'N/A'}</span>
+              </div>
+            </div>
+
+            {estudiante.contrasenaTemporal && (
+              <div>
+                <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide block mb-2">
+                  Contraseña Temporal
+                </label>
+                <div className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
+                  <FaKey className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+                  <span className="text-sm font-mono">{estudiante.contrasenaTemporal}</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
 
       {/* Modal de foto */}
       {showPhotoModal && (

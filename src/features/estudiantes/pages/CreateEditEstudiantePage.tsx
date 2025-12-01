@@ -679,11 +679,11 @@ export const CreateEditEstudiantePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Datos de Contacto */}
+          {/* Datos de Contacto y Dirección */}
           <div className="bg-white dark:bg-dark-card rounded-xl border border-neutral-100 dark:border-dark-border p-4 md:p-6 shadow-md">
-            <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Datos de Contacto</h2>
+            <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Contacto y Dirección</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
               {/* Correo */}
               <div>
                 <label htmlFor="correo" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
@@ -739,27 +739,23 @@ export const CreateEditEstudiantePage: React.FC = () => {
                   </p>
                 )}
               </div>
-            </div>
-          </div>
 
-          {/* Dirección */}
-          <div className="bg-white dark:bg-dark-card rounded-xl border border-neutral-100 dark:border-dark-border p-4 md:p-6 shadow-md">
-            <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Dirección</h2>
-
-            <div>
-              <label htmlFor="direccion" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
-                Dirección Completa
-              </label>
-              <input
-                type="text"
-                id="direccion"
-                name="direccion"
-                value={formData.direccion}
-                onChange={handleChange}
-                disabled={loading}
-                className="w-full px-3 py-2 border border-neutral-300 dark:border-dark-border rounded-lg text-sm bg-white dark:bg-dark-bg text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-100 dark:focus:ring-neutral-800 focus:border-neutral-400 dark:focus:border-neutral-600 disabled:bg-neutral-50 dark:disabled:bg-neutral-700/50 disabled:cursor-not-allowed"
-                placeholder="Ej: San José, Barrio Amón, 100m norte del Parque Morazán"
-              />
+              {/* Dirección - ocupa todo el ancho en lg */}
+              <div className="lg:col-span-1">
+                <label htmlFor="direccion" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                  Dirección
+                </label>
+                <input
+                  type="text"
+                  id="direccion"
+                  name="direccion"
+                  value={formData.direccion}
+                  onChange={handleChange}
+                  disabled={loading}
+                  className="w-full px-3 py-2 border border-neutral-300 dark:border-dark-border rounded-lg text-sm bg-white dark:bg-dark-bg text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-100 dark:focus:ring-neutral-800 focus:border-neutral-400 dark:focus:border-neutral-600 disabled:bg-neutral-50 dark:disabled:bg-neutral-700/50 disabled:cursor-not-allowed"
+                  placeholder="Ej: San José, Barrio Amón"
+                />
+              </div>
             </div>
           </div>
 
