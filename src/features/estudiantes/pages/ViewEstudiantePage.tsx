@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaArrowLeft, FaUser, FaClock, FaCheckCircle, FaTimesCircle, FaEnvelope, FaPhone, FaIdCard, FaMapMarkerAlt, FaGraduationCap, FaKey, FaEdit, FaBuilding } from 'react-icons/fa';
+import { FaArrowLeft, FaUser, FaClock, FaCheckCircle, FaTimesCircle, FaEnvelope, FaPhone, FaIdCard, FaMapMarkerAlt, FaGraduationCap, FaKey, FaEdit, FaBuilding, FaTimes, FaSearchPlus } from 'react-icons/fa';
 import { CgSpinner } from 'react-icons/cg';
 import { obtenerEstudiantePorIdApi } from '../api/estudiantesApi';
 import { obtenerTodasSucursalesApi } from '../../sucursales/api/sucursalesApi';
@@ -17,6 +17,7 @@ export const ViewEstudiantePage: React.FC = () => {
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -145,12 +146,21 @@ export const ViewEstudiantePage: React.FC = () => {
         {/* Header con foto */}
         <div className="bg-gradient-to-r from-indigo-50 to-indigo-100/50 dark:from-indigo-900/20 dark:to-indigo-800/10 px-4 md:px-6 py-5 border-b border-indigo-100 dark:border-indigo-900/30">
           <div className="flex items-center gap-5">
-            <UserAvatar
-              nombre={`${estudiante.nombre} ${estudiante.primerApellido}`}
-              pathFoto={estudiante.pathFoto}
-              size="xl"
-              className="ring-4 ring-white dark:ring-dark-card shadow-lg"
-            />
+            <button
+              onClick={() => setShowPhotoModal(true)}
+              className="relative group cursor-pointer"
+              title="Ver foto en grande"
+            >
+              <UserAvatar
+                nombre={`${estudiante.nombre} ${estudiante.primerApellido}`}
+                pathFoto={estudiante.pathFoto}
+                size="xl"
+                className="ring-4 ring-white dark:ring-dark-card shadow-lg group-hover:ring-indigo-300 dark:group-hover:ring-indigo-700 transition-all"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-full flex items-center justify-center transition-all">
+                <FaSearchPlus className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </button>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs text-neutral-500 dark:text-neutral-400">ID:</span>
@@ -311,6 +321,44 @@ export const ViewEstudiantePage: React.FC = () => {
           <div className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
             <FaMapMarkerAlt className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
             <span className="text-sm">{estudiante.direccion}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de foto */}
+      {showPhotoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => setShowPhotoModal(false)}
+          />
+          <div className="relative max-w-lg w-full">
+            <button
+              onClick={() => setShowPhotoModal(false)}
+              className="absolute -top-12 right-0 p-2 text-white hover:text-neutral-300 transition-colors"
+            >
+              <FaTimes className="w-6 h-6" />
+            </button>
+            <div className="bg-white dark:bg-dark-card rounded-2xl overflow-hidden shadow-2xl">
+              {estudiante.pathFoto ? (
+                <img
+                  src={estudiante.pathFoto}
+                  alt={`${estudiante.nombre} ${estudiante.primerApellido}`}
+                  className="w-full h-auto max-h-[70vh] object-contain"
+                />
+              ) : (
+                <div className="w-full aspect-square bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+                  <span className="text-8xl font-bold text-white">
+                    {estudiante.nombre.charAt(0)}{estudiante.primerApellido.charAt(0)}
+                  </span>
+                </div>
+              )}
+              <div className="p-4 text-center border-t border-neutral-200 dark:border-dark-border">
+                <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+                  {estudiante.nombre} {estudiante.primerApellido} {estudiante.segundoApellido || ''}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )}

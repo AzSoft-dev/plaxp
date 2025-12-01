@@ -624,17 +624,24 @@ export const CreateEditPlanPagoPage: React.FC = () => {
 
           {/* Tipo de Pago */}
           <div className="bg-white dark:bg-dark-card rounded-xl border border-neutral-100 dark:border-dark-border p-4 md:p-6 shadow-md">
-            <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
-              Tipo de Pago
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                Tipo de Pago
+              </h2>
+              {isEditMode && (
+                <span className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded">
+                  No modificable
+                </span>
+              )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <button
                 type="button"
                 onClick={() =>
-                  !loading && setFormData((prev) => ({ ...prev, tipoPago: TipoPago.UNICO }))
+                  !loading && !isEditMode && setFormData((prev) => ({ ...prev, tipoPago: TipoPago.UNICO }))
                 }
-                disabled={loading}
+                disabled={loading || isEditMode}
                 className={`flex items-center justify-center gap-3 px-4 py-4 rounded-lg border-2 transition-all duration-200 ${
                   formData.tipoPago === TipoPago.UNICO
                     ? 'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 border-blue-400 dark:border-blue-600 shadow-md'
@@ -667,9 +674,9 @@ export const CreateEditPlanPagoPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() =>
-                  !loading && setFormData((prev) => ({ ...prev, tipoPago: TipoPago.RECURRENTE }))
+                  !loading && !isEditMode && setFormData((prev) => ({ ...prev, tipoPago: TipoPago.RECURRENTE }))
                 }
-                disabled={loading}
+                disabled={loading || isEditMode}
                 className={`flex items-center justify-center gap-3 px-4 py-4 rounded-lg border-2 transition-all duration-200 ${
                   formData.tipoPago === TipoPago.RECURRENTE
                     ? 'bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/20 border-purple-400 dark:border-purple-600 shadow-md'
@@ -702,9 +709,9 @@ export const CreateEditPlanPagoPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() =>
-                  !loading && setFormData((prev) => ({ ...prev, tipoPago: TipoPago.CUOTAS }))
+                  !loading && !isEditMode && setFormData((prev) => ({ ...prev, tipoPago: TipoPago.CUOTAS }))
                 }
-                disabled={loading}
+                disabled={loading || isEditMode}
                 className={`flex items-center justify-center gap-3 px-4 py-4 rounded-lg border-2 transition-all duration-200 ${
                   formData.tipoPago === TipoPago.CUOTAS
                     ? 'bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/20 border-amber-400 dark:border-amber-600 shadow-md'

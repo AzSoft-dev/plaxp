@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   FaCheckCircle,
   FaTimesCircle,
-  FaCreditCard,
   FaSync,
   FaLayerGroup,
   FaDollarSign,
@@ -133,18 +132,15 @@ const fetchPlanesPago = async (
     const transformedData: PlanPagoItem[] = response.data.planesPago.map(
       (plan: PlanPago) => {
         const nombreElement = (
-          <div className="flex items-center gap-2">
-            <FaCreditCard className="w-4 h-4 text-rose-500" />
-            <div className="flex flex-col">
-              <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                {plan.nombre}
+          <div className="flex flex-col">
+            <span className="font-medium text-neutral-900 dark:text-neutral-100">
+              {plan.nombre}
+            </span>
+            {plan.descripcion && (
+              <span className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-1">
+                {plan.descripcion}
               </span>
-              {plan.descripcion && (
-                <span className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-1">
-                  {plan.descripcion}
-                </span>
-              )}
-            </div>
+            )}
           </div>
         );
 

@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
-import { LoginPage, PasswordRecoveryPage, VerifyCodePage, ResetPasswordPage, DashboardPage } from './features/security';
+import { LoginPage, PasswordRecoveryPage, VerifyCodePage, ResetPasswordPage } from './features/security';
+import { DashboardPage } from './features/dashboard';
 import { UsersPage, CreateEditUserPage, ViewUserPage } from './features/users';
 import { RolesPage, CreateEditRolPage, ViewRolPage } from './features/roles';
 import { EstudiantesPage, ViewEstudiantePage, CreateEditEstudiantePage, ImportEstudiantesPage } from './features/estudiantes';
@@ -9,6 +10,8 @@ import { ProfesoresPage, CreateEditProfesorPage, ViewProfesorPage } from './feat
 import { SucursalesPage, CreateEditSucursalPage, ViewSucursalPage } from './features/sucursales';
 import { PeriodosLectivosPage, CreateEditPeriodoLectivoPage, ViewPeriodoLectivoPage } from './features/periodosLectivos';
 import { PlanesPagoPage, CreateEditPlanPagoPage, ViewPlanPagoPage } from './features/planesPago';
+import { MatriculasPagosPage, ViewMatriculaPagoPage } from './features/matriculasPagos';
+import { MatriculasPage, ViewMatriculaPage, CreateMatriculaPage } from './features/matriculas';
 import { LandingPage } from './features/homePage/pages/LandingPage';
 import { DemoPage } from './features/homePage/pages/DemoPage';
 import { DemoSchedulePage } from './features/homePage/pages/DemoSchedulePage';
@@ -350,6 +353,48 @@ export const AppContent = () => {
         <ProtectedRoute>
           <MainLayout>
             <ViewPlanPagoPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+
+      {/* Rutas de Matrículas */}
+      <Route path="/matriculas" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <MatriculasPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/matriculas/create" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <CreateMatriculaPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/matriculas/view/:id" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <ViewMatriculaPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+
+      {/* Rutas de Pagos de Matrículas (solo lectura) */}
+      <Route path="/pagos" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <MatriculasPagosPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/pagos/view/:id" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <ViewMatriculaPagoPage />
           </MainLayout>
         </ProtectedRoute>
       } />

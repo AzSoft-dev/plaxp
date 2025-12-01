@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/security/hooks/useAuth';
 import { ThemeToggle } from '../components';
-import { FaChalkboardTeacher, FaSyncAlt, FaCreditCard, FaUser, FaSignOutAlt, FaCamera } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaSyncAlt, FaCreditCard, FaReceipt, FaUser, FaSignOutAlt, FaCamera, FaClipboardList } from 'react-icons/fa';
 import { HiX, HiChevronDown } from 'react-icons/hi';
 import { CgSpinner } from 'react-icons/cg';
 import { UserAvatar } from '../../features/users/components/UserAvatar';
@@ -278,7 +278,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         `}
       >
         {/* Logo */}
-        <div className="h-14 flex items-center justify-center border-b border-neutral-200 dark:border-dark-border px-4 bg-white/50 dark:bg-dark-card/50 backdrop-blur-sm flex-shrink-0 overflow-hidden whitespace-nowrap">
+        <div className="h-14 flex items-center justify-center border-b border-neutral-200 dark:border-dark-border px-4 bg-white dark:bg-dark-card flex-shrink-0 overflow-hidden whitespace-nowrap">
           <div className="flex items-center justify-center w-full transition-all duration-300">
             {isCollapsed && !mobileSidebarOpen ? (
               <img src="/icono.png" alt="Plaxp" className="w-8 h-8 object-contain transform hover:scale-110 transition-transform" />
@@ -602,8 +602,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               </Link>
             )}
 
-            {/* Separador - Financiero (solo si tiene permiso de periodos-lectivos o planes-pago) */}
-            {(hasPermission('periodos-lectivos.ver') || hasPermission('planes-pago.ver')) && (
+            {/* Separador - Financiero */}
+            {(hasPermission('periodos-lectivos.ver') || hasPermission('planes-pago.ver') || true) && (
               <>
                 <div className={`mt-4 mb-1 px-3 transition-opacity duration-200 ${isCollapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>
                     <p className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
@@ -679,6 +679,66 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 </span>
               </Link>
             )}
+
+            {/* Matrículas */}
+            <Link
+              to="/matriculas"
+              onClick={() => setMobileSidebarOpen(false)}
+              className={`
+                group flex items-center gap-3 py-2 rounded-lg transition-all duration-200 relative overflow-hidden whitespace-nowrap
+                ${isCollapsed ? 'justify-center px-0' : 'px-3'}
+                ${location.pathname.startsWith('/matriculas')
+                  ? 'bg-gradient-to-r from-orange-500/15 to-orange-500/5 text-orange-600 shadow-sm'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
+                }
+              `}
+            >
+              {location.pathname.startsWith('/matriculas') && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-gradient-to-b from-orange-500 to-orange-600 rounded-r-full"></div>
+              )}
+              <div className={`
+                relative z-10 p-1.5 rounded-md transition-all duration-200 flex-shrink-0
+                ${location.pathname.startsWith('/matriculas')
+                  ? 'bg-gradient-to-br from-orange-500 to-orange-600 shadow-md shadow-orange-500/30'
+                  : 'bg-gradient-to-br from-orange-500 to-orange-600 shadow-md shadow-orange-500/20 group-hover:shadow-orange-500/30'
+                }
+              `}>
+                <FaClipboardList className="w-4 h-4 text-white" />
+              </div>
+              <span className={`relative z-10 font-medium text-sm transition-opacity duration-200 ${isCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100'}`}>
+                Matrículas
+              </span>
+            </Link>
+
+            {/* Pagos */}
+            <Link
+              to="/pagos"
+              onClick={() => setMobileSidebarOpen(false)}
+              className={`
+                group flex items-center gap-3 py-2 rounded-lg transition-all duration-200 relative overflow-hidden whitespace-nowrap
+                ${isCollapsed ? 'justify-center px-0' : 'px-3'}
+                ${location.pathname.startsWith('/pagos')
+                  ? 'bg-gradient-to-r from-emerald-500/15 to-emerald-500/5 text-emerald-600 shadow-sm'
+                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/80 dark:hover:bg-dark-hover'
+                }
+              `}
+            >
+              {location.pathname.startsWith('/pagos') && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-r-full"></div>
+              )}
+              <div className={`
+                relative z-10 p-1.5 rounded-md transition-all duration-200 flex-shrink-0
+                ${location.pathname.startsWith('/pagos')
+                  ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-md shadow-emerald-500/30'
+                  : 'bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-md shadow-emerald-500/20 group-hover:shadow-emerald-500/30'
+                }
+              `}>
+                <FaReceipt className="w-4 h-4 text-white" />
+              </div>
+              <span className={`relative z-10 font-medium text-sm transition-opacity duration-200 ${isCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100'}`}>
+                Pagos
+              </span>
+            </Link>
 
             {/* Separador - Sistema */}
             <div className={`mt-4 mb-1 px-3 transition-opacity duration-200 ${isCollapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>
@@ -860,7 +920,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Main Content Area */}
       <div className={`flex-1 flex flex-col h-screen overflow-hidden ${marginLeft}`}>
         {/* Header */}
-        <header className="h-16 bg-white/80 dark:bg-dark-card/80 backdrop-blur-md shadow-soft flex items-center justify-between px-4 lg:px-6 border-b border-neutral-200/50 dark:border-dark-border/50 flex-shrink-0">
+        <header className="h-16 bg-white dark:bg-dark-card shadow-soft flex items-center justify-between px-4 lg:px-6 border-b border-neutral-200 dark:border-dark-border flex-shrink-0">
           <button
             onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
             className="lg:hidden p-2 text-neutral-600 dark:text-neutral-400 hover:bg-primary/10 hover:text-primary rounded-lg transition-all duration-200"
@@ -951,8 +1011,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(4px)'
+            backgroundColor: 'rgba(0,0,0,0.5)'
           }}
           onClick={(e) => { if (e.target === e.currentTarget) closeProfileModal(); }}
         >

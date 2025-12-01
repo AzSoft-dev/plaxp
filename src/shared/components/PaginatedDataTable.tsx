@@ -152,8 +152,10 @@ const PaginatedTable = <T extends BaseItem>({ data, columns, onRowClick, onEdit,
                                         <svg
                                             className={`w-4 h-4 transition-all drop-shadow-sm ${
                                                 sortColumn === col.key && sortDirection === 'asc'
-                                                    ? 'opacity-100 scale-125'
-                                                    : 'opacity-70 group-hover:opacity-90'
+                                                    ? 'text-purple-600 dark:text-purple-400 opacity-100'
+                                                    : sortColumn === col.key
+                                                        ? 'opacity-20'
+                                                        : 'opacity-40 group-hover:opacity-60'
                                             }`}
                                             fill="currentColor"
                                             viewBox="0 0 20 20"
@@ -163,8 +165,10 @@ const PaginatedTable = <T extends BaseItem>({ data, columns, onRowClick, onEdit,
                                         <svg
                                             className={`w-4 h-4 transition-all drop-shadow-sm ${
                                                 sortColumn === col.key && sortDirection === 'desc'
-                                                    ? 'opacity-100 scale-125'
-                                                    : 'opacity-70 group-hover:opacity-90'
+                                                    ? 'text-purple-600 dark:text-purple-400 opacity-100'
+                                                    : sortColumn === col.key
+                                                        ? 'opacity-20'
+                                                        : 'opacity-40 group-hover:opacity-60'
                                             }`}
                                             fill="currentColor"
                                             viewBox="0 0 20 20"
